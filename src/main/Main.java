@@ -1,6 +1,7 @@
 package main;
-import java.io*;
+import java.io.*;
 import lexer.Lexer;
+import lexer.sym;
 import java_cup.runtime.Symbol;
 
 public class Main {
@@ -10,7 +11,7 @@ public class Main {
         Lexer lexer = new Lexer(reader);
 
         Symbol token;
-        while ((token = lexer.next_token()).sym != Symbol.EOF) {
+        while ((token = lexer.next_token()).sym != sym.EOF) {
             System.out.println("Token: " + token.sym);
         }
 

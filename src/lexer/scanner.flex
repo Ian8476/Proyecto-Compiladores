@@ -1,6 +1,8 @@
+package lexer;
 %%
 
 %class Lexer
+%public
 %unicode 
 %cup
 %line

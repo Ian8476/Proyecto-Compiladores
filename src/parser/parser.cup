@@ -2,6 +2,8 @@ import java_cup.runtime.Symbol;
 
 terminal MAIN;
 
-non terminal program;
+non terminal Object program;
 
-program :=: MAIN;
+program ::= MAIN
+           ;
+
