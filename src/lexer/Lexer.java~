@@ -3,7 +3,6 @@
 // source: src/lexer/scanner.flex
 
 package lexer;
-import sym;
 
 @SuppressWarnings("fallthrough")
 public class Lexer implements java_cup.runtime.Scanner {
