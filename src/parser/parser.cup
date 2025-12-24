@@ -1,0 +1,7 @@
+import java_cup.runtime.Symbol;
+
+terminal MAIN;
+
+non terminal program;
+
+program :=: MAIN;

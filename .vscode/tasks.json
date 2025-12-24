@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Generar Scanner (JFlex)",
+      "type": "shell",
+      "command": "java",
+      "args": [
+        "-jar",
+        "lib/jflex.jar",
+        "src/lexer/scanner.flex"
+      ]
+    },
+    {
+      "label": "Generar Parser (CUP)",
+      "type": "shell",
+      "command": "java",
+      "args": [
+        "-jar",
+        "lib/cup.jar",
+        "-symbols",
+        "sym",
+        "-parser",
+        "Parser",
+        "src/parser/parser.cup"
+      ]
+    }
+  ]
+}
