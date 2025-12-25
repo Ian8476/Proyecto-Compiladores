@@ -1,8 +1,33 @@
+package lexer;
 import java_cup.runtime.Symbol;
 
 terminal MAIN;
+terminal FUNCTION, IF, ELSE, FOR, WHILE, RETURN;
+terminal IDENT;
+terminal NUMBER;
+terminal IGUAL, SUMA, RESTA, MULTIPLICACION, DIVISION, POTENCIA;
+terminal PARENTizq, PARENder, COMA, PUNTCOMA;
+terminal BLOQAB, BLOQCR;
 
-non terminal Object program;
+
+
+
+non terminal FuncList func_list;
+non terminal Func function;
+non terminal Params params;
+non terminal ParamList param_list;
+non terminal Block block;
+non terminal StmtList stmt_list;
+non terminal Stmt stmt;
+non terminal Expr expr;
+non terminal IfStmt if_stmt;
+non terminal WhileStmt while_stmt;
+non terminal ForStmt for_stmt;
+non terminal ReturnStmt return_stmt;
+
+non terminal Object program; 
+
+
 
 program ::= MAIN
            ;
