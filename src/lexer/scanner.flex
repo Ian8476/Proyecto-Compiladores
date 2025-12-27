@@ -1,6 +1,7 @@
 package lexer;
-%%
+import java_cup.runtime.Symbol;
 
+%%
 %class Lexer
 %public
 %unicode
@@ -8,46 +9,57 @@ package lexer;
 %line
 %column
 
-ALFA = [A-Za-z_]   /*Alfanumerico*/
-DIGIT = [0-9]       /*Digito*/
-ID = {ALFA}({ALFA}|{DIGIT})*
-NUM = {DIGIT}+          /*Numero*/
+ALFA  = [A-Za-z_]
+DIGIT = [0-9]
+ID    = {ALFA}({ALFA}|{DIGIT})*
+NUM   = {DIGIT}+
 
 %%
 
-[ ,\t,\r,\n]+     {/* ignorar estos espacios...testeo */ }
+/* Ignorar espacios */
+[ \t\r\n]+ {}
 
+/* MAIN */
+"navidad" { return new Symbol(sym.MAIN, yyline+1, yycolumn+1); }
 
-"navidad"       { return new java_cup.runtime.Symbol(sym.MAIN);}
+/* Palabras reservadas */
+"function" { return new Symbol(sym.FUNCTION, yyline+1, yycolumn+1); }
+"if"       { return new Symbol(sym.IF, yyline+1, yycolumn+1); }
+"else"     { return new Symbol(sym.ELSE, yyline+1, yycolumn+1); }
+"for"      { return new Symbol(sym.FOR, yyline+1, yycolumn+1); }
+"while"    { return new Symbol(sym.WHILE, yyline+1, yycolumn+1); }
+"return"   { return new Symbol(sym.RETURN, yyline+1, yycolumn+1); }
 
+/* Operadores */
+"=" { return new Symbol(sym.IGUAL, yyline+1, yycolumn+1); }
+"+" { return new Symbol(sym.SUMA, yyline+1, yycolumn+1); }
+"-" { return new Symbol(sym.RESTA, yyline+1, yycolumn+1); }
+"*" { return new Symbol(sym.MULTIPLICACION, yyline+1, yycolumn+1); }
+"/" { return new Symbol(sym.DIVISION, yyline+1, yycolumn+1); }
+"^" { return new Symbol(sym.POTENCIA, yyline+1, yycolumn+1); }
 
+/* Delimitadores */
+"(" { return new Symbol(sym.PARENTizq, yyline+1, yycolumn+1); }
+")" { return new Symbol(sym.PARENder, yyline+1, yycolumn+1); }
+"," { return new Symbol(sym.COMA, yyline+1, yycolumn+1); }
+";" { return new Symbol(sym.PUNTCOMA, yyline+1, yycolumn+1); }
 
-"function" { return new java_cup.runtime.Symbol(sym.FUNCTION); }
-"if" { return new java_cup.runtime.Symbol(sym.IF); }
-"else" { return new java_cup.runtime.Symbol(sym.ELSE); }
-"for" { return new java_cup.runtime.Symbol(sym.FOR); }
-"while" { return new java_cup.runtime.Symbol(sym.WHILE); }
-"return" { return new java_cup.runtime.Symbol(sym.RETURN); }
+/* Bloques */
+"¡" { return new Symbol(sym.BLOQAB, yyline+1, yycolumn+1); }
+"!" { return new Symbol(sym.BLOQCR, yyline+1, yycolumn+1); }
 
-"=" { return new java_cup.runtime.Symbol(sym.IGUAL); }
-"+" { return new java_cup.runtime.Symbol(sym.SUMA); }
-"-" { return new java_cup.runtime.Symbol(sym.RESTA); }
-"*" { return new java_cup.runtime.Symbol(sym.MULTIPLICACION); }
-"/" { return new java_cup.runtime.Symbol(sym.DIVISION); }
-"^" { return new java_cup.runtime.Symbol(sym.POTENCIA); }
-"(" { return new java_cup.runtime.Symbol(sym.PARENTizq); }
-")" { return new java_cup.runtime.Symbol(sym.PARENder); }
-"," { return new java_cup.runtime.Symbol(sym.COMA); }
-";" { return new java_cup.runtime.Symbol(sym.PUNTCOMA); }
+/* Identificadores y números */
+{ID}  { return new Symbol(sym.IDENT, yyline+1, yycolumn+1, yytext()); }
+{NUM} { return new Symbol(sym.NUMBER, yyline+1, yycolumn+1, Integer.parseInt(yytext())); }
 
-"¡" { return new java_cup.runtime.Symbol(sym.BLOQAB); } /* inicio de bloque */
-"!" { return new java_cup.runtime.Symbol(sym.BLOQCR); } /* fin de bloque */
+/* EOF */
+<<EOF>> { return new Symbol(sym.EOF); }
 
-
-
-
-.               {
-    System.err.println("Error léxico: '" + yytext() +
-                        "' linea " + (yyline+1) +
-                        " columna " + (yycolumn+1));
+/* Error léxico */
+. {
+  System.err.println(
+    "Error léxico: '" + yytext() +
+    "' línea " + (yyline+1) +
+    " columna " + (yycolumn+1)
+  );
 }

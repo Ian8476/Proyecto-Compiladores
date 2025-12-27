@@ -1,6 +1,9 @@
 package lexer;
 import java_cup.runtime.Symbol;
 
+/* =========================
+   TERMINALES (NO TOCAR MAIN)
+   ========================= */
 terminal MAIN;
 terminal FUNCTION, IF, ELSE, FOR, WHILE, RETURN;
 terminal IDENT;
@@ -9,26 +12,130 @@ terminal IGUAL, SUMA, RESTA, MULTIPLICACION, DIVISION, POTENCIA;
 terminal PARENTizq, PARENder, COMA, PUNTCOMA;
 terminal BLOQAB, BLOQCR;
 
+/* =========================
+   NO TERMINALES (TODO Object)
+   ========================= */
+non terminal Object program;
 
+non terminal Object func_list;
+non terminal Object function;
+non terminal Object params;
+non terminal Object param_list;
 
+non terminal Object block;
+non terminal Object stmt_list;
+non terminal Object stmt;
 
-non terminal FuncList func_list;
-non terminal Func function;
-non terminal Params params;
-non terminal ParamList param_list;
-non terminal Block block;
-non terminal StmtList stmt_list;
-non terminal Stmt stmt;
-non terminal Expr expr;
-non terminal IfStmt if_stmt;
-non terminal WhileStmt while_stmt;
-non terminal ForStmt for_stmt;
-non terminal ReturnStmt return_stmt;
+non terminal Object if_stmt;
+non terminal Object while_stmt;
+non terminal Object for_stmt;
+non terminal Object return_stmt;
 
-non terminal Object program; 
+non terminal Object expr;
+non terminal Object expr_suma;
+non terminal Object expr_mult;
+non terminal Object expr_pot;
+non terminal Object expr_prim;
 
+non terminal Object for_ini;
+non terminal Object for_inc;
 
+/* =========================
+   PRECEDENCIAS (AQUÍ, DESPUÉS de non terminal)
+   ========================= */
+precedence right IGUAL;
+precedence right POTENCIA;
+precedence left MULTIPLICACION, DIVISION;
+precedence left SUMA, RESTA;
 
+start with program;
+
+/* =========================
+   PRODUCCIONES
+   ========================= */
+
+/* NO se elimina: existe */
 program ::= MAIN
+          | MAIN block
+          ;
+
+/* funciones (opcionales) */
+func_list ::= /* empty */
+            | func_list function
+            ;
+
+function ::= FUNCTION IDENT PARENTizq params PARENder block
            ;
 
+params ::= /* empty */
+         | param_list
+         ;
+
+param_list ::= IDENT
+            | param_list COMA IDENT
+            ;
+
+/* bloques ¡ ... ! */
+block ::= BLOQAB stmt_list BLOQCR
+        ;
+
+stmt_list ::= /* empty */
+            | stmt_list stmt
+            ;
+
+/* sentencias */
+stmt ::= IDENT IGUAL expr PUNTCOMA
+       | expr PUNTCOMA
+       | if_stmt
+       | while_stmt
+       | for_stmt
+       | return_stmt PUNTCOMA
+       ;
+
+return_stmt ::= RETURN expr
+              ;
+
+if_stmt ::= IF PARENTizq expr PARENder block
+          | IF PARENTizq expr PARENder block ELSE block
+          ;
+
+while_stmt ::= WHILE PARENTizq expr PARENder block
+             ;
+
+for_stmt ::= FOR PARENTizq for_ini PUNTCOMA expr PUNTCOMA for_inc PARENder block
+           ;
+
+for_ini ::= /* empty */
+          | IDENT IGUAL expr
+          | expr
+          ;
+
+for_inc ::= /* empty */
+          | IDENT IGUAL expr
+          | expr
+          ;
+
+/* =========================
+   EXPRESIONES (sin conflictos)
+   ========================= */
+expr ::= expr_suma
+       ;
+
+expr_suma ::= expr_suma SUMA expr_mult
+            | expr_suma RESTA expr_mult
+            | expr_mult
+            ;
+
+expr_mult ::= expr_mult MULTIPLICACION expr_pot
+            | expr_mult DIVISION expr_pot
+            | expr_pot
+            ;
+
+expr_pot ::= expr_prim POTENCIA expr_pot
+           | expr_prim
+           ;
+
+expr_prim ::= IDENT
+            | NUMBER
+            | PARENTizq expr PARENder
+            ;
