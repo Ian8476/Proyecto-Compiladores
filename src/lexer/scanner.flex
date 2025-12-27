@@ -156,7 +156,7 @@ ESPACIO = [ \t\f\r\n]+
 /* EOF */
 <<EOF>>     { return new Symbol(sym.EOF); }
 
-/* Error léxico */
+/* Error léxico. despliega el error con linea y columna y prosigue con el siguiente token */
 . {
   System.err.println("Error léxico: '" + yytext() +
     "' línea " + (yyline+1) + " columna " + (yycolumn+1));
