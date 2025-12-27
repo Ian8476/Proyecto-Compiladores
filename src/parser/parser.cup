@@ -1,9 +1,268 @@
+package lexer;
 import java_cup.runtime.Symbol;
 
-terminal MAIN;
+/* =========================
+   TERMINALES (TOKENS)
+   ========================= */
+terminal MAIN, GIFT;
 
+terminal WORLD, LOCAL, ENDL;
+terminal T_INT, T_FLOAT, T_BOOL, T_CHAR, T_STRING, T_COAL;
+
+terminal IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, CHAR_LIT, STRING_LIT;
+
+terminal IGUAL, SUMA, RESTA, MULTIPLICACION, DIVISION, INTDIV, MODULO, POTENCIA;
+terminal INC, DEC;
+
+terminal LT, LE, GT, GE, EQ, NEQ;
+terminal AND, OR, NOT;
+terminal ARROW;
+
+terminal PARENTizq, PARENder, CORCHizq, CORCHder, COMA;
+terminal BLOQAB, BLOQCR;
+
+terminal DECIDE, OF, ELSE, END, LOOP, EXIT, WHEN, FOR, RETURN, BREAK;
+
+/* =========================
+   NO TERMINALES (TODO Object)
+   ========================= */
 non terminal Object program;
 
-program ::= MAIN
+non terminal Object lista_globales, decl_global;
+non terminal Object lista_funciones, funcion, params, lista_params;
+non terminal Object navidad_decl;
+
+non terminal Object bloque_bloq;
+non terminal Object stmt_list, stmt;
+
+non terminal Object tipo_base;
+non terminal Object dims2d_opt;
+
+non terminal Object decl_local;
+non terminal Object asignacion;
+
+non terminal Object expr, expr_or, expr_and, expr_eq, expr_rel, expr_suma, expr_mult, expr_pot, expr_un, prim;
+non terminal Object llamada, args, lista_args;
+
+non terminal Object arr_access, arr_init, lista_filas, fila, lista_elems;
+
+non terminal Object decide_stmt, decide_casos, decide_caso;
+non terminal Object loop_stmt;
+
+/* =========================
+   PRECEDENCIAS
+   ========================= */
+precedence right IGUAL;
+precedence left OR;
+precedence left AND;
+precedence left EQ, NEQ;
+precedence left LT, LE, GT, GE;
+precedence left SUMA, RESTA;
+precedence left MULTIPLICACION, DIVISION, INTDIV, MODULO;
+precedence right POTENCIA;
+precedence right NOT;
+precedence right INC, DEC;
+
+start with program;
+
+/* =========================
+   PRODUCCIONES
+   ========================= */
+
+/* Programa: globales* funciones* navidad */
+program ::= lista_globales lista_funciones navidad_decl
+          ;
+
+/* -------- Globales (world) -------- */
+lista_globales ::= /* empty */
+                 | lista_globales decl_global
+                 ;
+
+/*
+  world tipo id dims? endl
+  world tipo id dims? = expr endl
+  world tipo id dims? = arr_init endl
+*/
+decl_global ::= WORLD tipo_base IDENT dims2d_opt ENDL
+              | WORLD tipo_base IDENT dims2d_opt IGUAL expr ENDL
+              | WORLD tipo_base IDENT dims2d_opt IGUAL arr_init ENDL
+              ;
+
+/* -------- Funciones (gift) -------- */
+lista_funciones ::= /* empty */
+                  | lista_funciones funcion
+                  ;
+
+funcion ::= GIFT tipo_base IDENT PARENTizq params PARENder bloque_bloq
+          ;
+
+params ::= /* empty */
+         | lista_params
+         ;
+
+lista_params ::= tipo_base IDENT
+               | lista_params COMA tipo_base IDENT
+               ;
+
+/* navidad: único main, tipo coal, sin parámetros */
+navidad_decl ::= T_COAL MAIN PARENTizq PARENder bloque_bloq
+               ;
+
+/* -------- Tipos -------- */
+tipo_base ::= T_INT
+            | T_FLOAT
+            | T_BOOL
+            | T_CHAR
+            | T_STRING
+            ;
+
+/* -------- Dimensiones opcionales 2D -------- */
+dims2d_opt ::= /* empty */
+             | CORCHizq INT_LIT CORCHder CORCHizq INT_LIT CORCHder
+             ;
+
+/* -------- Arreglos: acceso e init -------- */
+arr_access ::= IDENT CORCHizq expr CORCHder CORCHizq expr CORCHder
+             ;
+
+/* init con ¡ ... ! como matriz: ¡ ¡a,b! , ¡c,d! ! */
+arr_init ::= BLOQAB lista_filas BLOQCR
            ;
 
+lista_filas ::= fila
+              | lista_filas COMA fila
+              ;
+
+fila ::= BLOQAB lista_elems BLOQCR
+       ;
+
+lista_elems ::= expr
+              | lista_elems COMA expr
+              ;
+
+/* -------- Bloques -------- */
+bloque_bloq ::= BLOQAB stmt_list BLOQCR
+              ;
+
+stmt_list ::= /* empty */
+            | stmt_list stmt
+            ;
+
+/* -------- Sentencias (endl termina) -------- */
+stmt ::= decl_local ENDL
+       | asignacion ENDL
+       | expr ENDL
+       | RETURN expr ENDL
+       | BREAK ENDL
+       | decide_stmt
+       | loop_stmt
+       | FOR PARENTizq asignacion ENDL expr ENDL asignacion PARENder bloque_bloq
+       ;
+
+/* local tipo id dims? (= expr | = arr_init)? */
+decl_local ::= LOCAL tipo_base IDENT dims2d_opt
+             | LOCAL tipo_base IDENT dims2d_opt IGUAL expr
+             | LOCAL tipo_base IDENT dims2d_opt IGUAL arr_init
+             ;
+
+/* asignación: id = expr | A[i][j] = expr */
+asignacion ::= IDENT IGUAL expr
+             | arr_access IGUAL expr
+             ;
+
+/* -------- decide of --------
+decide of
+ (¿ cond ? -> bloque)+
+ (else -> bloque)?
+end decide endl
+*/
+decide_stmt ::= DECIDE OF decide_casos END DECIDE ENDL
+              | DECIDE OF decide_casos ELSE ARROW bloque_bloq END DECIDE ENDL
+              ;
+
+decide_casos ::= decide_caso
+               | decide_casos decide_caso
+               ;
+
+decide_caso ::= PARENTizq expr PARENder ARROW bloque_bloq
+              ;
+
+/* -------- loop (Ada) --------
+loop
+  instrucciones...
+  exit when condicion endl
+end loop endl
+*/
+loop_stmt ::= LOOP stmt_list EXIT WHEN expr ENDL END LOOP ENDL
+            ;
+
+/* =========================
+   EXPRESIONES (por niveles)
+   ========================= */
+expr ::= expr_or
+       ;
+
+expr_or ::= expr_or OR expr_and
+          | expr_and
+          ;
+
+expr_and ::= expr_and AND expr_eq
+           | expr_eq
+           ;
+
+expr_eq ::= expr_eq EQ expr_rel
+          | expr_eq NEQ expr_rel
+          | expr_rel
+          ;
+
+expr_rel ::= expr_rel LT expr_suma
+           | expr_rel LE expr_suma
+           | expr_rel GT expr_suma
+           | expr_rel GE expr_suma
+           | expr_suma
+           ;
+
+expr_suma ::= expr_suma SUMA expr_mult
+            | expr_suma RESTA expr_mult
+            | expr_mult
+            ;
+
+expr_mult ::= expr_mult MULTIPLICACION expr_pot
+            | expr_mult DIVISION expr_pot
+            | expr_mult INTDIV expr_pot
+            | expr_mult MODULO expr_pot
+            | expr_pot
+            ;
+
+expr_pot ::= expr_un POTENCIA expr_pot
+           | expr_un
+           ;
+
+expr_un ::= RESTA expr_un
+          | INC expr_un
+          | DEC expr_un
+          | NOT expr_un
+          | prim
+          ;
+
+prim ::= INT_LIT
+       | FLOAT_LIT
+       | BOOL_LIT
+       | CHAR_LIT
+       | STRING_LIT
+       | IDENT
+       | arr_access
+       | llamada
+       | PARENTizq expr PARENder
+       ;
+
+llamada ::= IDENT PARENTizq args PARENder
+          ;
+
+args ::= /* empty */
+       | lista_args
+       ;
+
+lista_args ::= expr
+             | lista_args COMA expr
+             ;
