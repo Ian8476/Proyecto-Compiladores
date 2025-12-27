@@ -22,15 +22,13 @@ public class Main {
                 String name = token.sym >= 0 && token.sym < sym.terminalNames.length
                         ? sym.terminalNames[token.sym]
                         : String.valueOf(token.sym);
-                String line;
-                if (token.value != null) {
-                    line = name + " -> " + token.value.toString();
-                } else {
-                    line = name;
-                }
-                w.write(line);
+                String lexema = token.value != null ? token.value.toString() : "";
+                int linea = token.left;   // línea provista por el lexer (1-based)
+                int columna = token.right; // columna provista por el lexer (1-based)
+                String out = name + " (" + token.sym + ")" + ", " + lexema + ", " + linea + ", " + columna;
+                w.write(out);
                 w.newLine();
-                System.out.println(line);
+                System.out.println(out);
             }
         }
 
