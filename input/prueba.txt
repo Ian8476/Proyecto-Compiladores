@@ -1,1 +1,40 @@
-navidad ¡ x = 3 + 4; !
+world int contador endl
+world char matriz[2][3] = ¡
+    ¡ 'a', 'b', 'c' !
+    ¡ 'd', 'e', 'f' !
+! endl
+
+gift int suma¿int a, int b? ¡
+    local int resultado = a + b endl
+    return resultado endl
+!
+
+coal navidad¿? ¡
+    local int x = 5 endl
+    local int y = 10 endl
+
+    x = suma¿x, y? endl
+
+    decide of
+        ¿ x > 10 ? -> ¡
+            x = x - 1 endl
+        !
+        ¿ x == 10 ? -> ¡
+            x = x + 1 endl
+        !
+    else -> ¡
+            x = 0 endl
+    !
+    end decide endl
+
+    loop
+        x = x - 1 endl
+        exit when x == 0 endl
+    end loop endl
+
+    for ¿ x = 0 endl x < 3 endl x = x + 1 ? ¡
+        matriz[x][0] = 'z' endl
+    !
+
+    return x endl
+!
