@@ -1,0 +1,64 @@
+Trabajo #1 Clase
+Integrantes:
+
+Ian Mauricio Canales Rodriguez
+Duan Antonio Espinoza Olivares
+
+
+
+// Se hacen las asignaciones de los tokens terminales y no terminales para el .java_cup
+**********************************
+
+package lexer;
+import java_cup.runtime.Symbol;
+
+/* =========================
+   TERMINALES (TOKENS)
+   ========================= */
+terminal MAIN, GIFT;
+
+terminal WORLD, LOCAL, ENDL;
+terminal T_INT, T_FLOAT, T_BOOL, T_CHAR, T_STRING, T_COAL;
+
+terminal IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, CHAR_LIT, STRING_LIT;
+
+terminal IGUAL, SUMA, RESTA, MULTIPLICACION, DIVISION, INTDIV, MODULO, POTENCIA;
+terminal INC, DEC;
+
+terminal LT, LE, GT, GE, EQ, NEQ;
+terminal AND, OR, NOT;
+terminal ARROW;
+
+terminal PARENTizq, PARENder, CORCHizq, CORCHder, COMA;
+terminal BLOQAB, BLOQCR;
+
+terminal DECIDE, OF, ELSE, END, LOOP, EXIT, WHEN, FOR, RETURN, BREAK;
+
+/* =========================
+   NO TERMINALES (TODO Object)
+   ========================= */
+non terminal Object program;
+
+non terminal Object lista_globales, decl_global;
+non terminal Object lista_funciones, funcion, params, lista_params;
+non terminal Object navidad_decl;
+
+non terminal Object bloque_bloq;
+non terminal Object stmt_list, stmt;
+
+non terminal Object tipo_base;
+non terminal Object dims2d_opt;
+
+non terminal Object decl_local;
+non terminal Object asignacion;
+
+non terminal Object expr, expr_or, expr_and, expr_eq, expr_rel, expr_suma, expr_mult, expr_pot, expr_un, prim;
+non terminal Object llamada, args, lista_args;
+
+non terminal Object arr_access, arr_init, lista_filas, fila, lista_elems;
+
+non terminal Object decide_stmt, decide_casos, decide_caso;
+non terminal Object loop_stmt;
+
+
+***************************************************
