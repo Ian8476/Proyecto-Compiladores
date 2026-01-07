@@ -6,7 +6,14 @@ Duan Antonio Espinoza Olivares
 
 
 
-// Se hacen las asignaciones de los tokens terminales y no terminales para el .java_cup
+// Se definen los tokens terminales (palabras reservadas, identificadores,
+// operadores, delimitadores) provenientes del analizador léxico,
+// y los no terminales (expresiones, sentencias, bloques, estructuras de control)
+// que describen la gramática en JavaCUP. 
+// Esta asignación permite al parser reconocer la sintaxis,
+// construir el árbol sintáctico, manejar errores y generar la tabla de símbolos.
+
+
 **********************************
 
 package lexer;
@@ -63,7 +70,11 @@ non terminal Object loop_stmt;
 
 ***************************************************
 
-// Asignación de los PRECEDENCIAS
+// Asignación de las precedencias y asociatividades de los operadores.
+// Esto permite al parser resolver conflictos sintácticos (shift/reduce o reduce/reduce)
+// y definir el orden correcto de evaluación en expresiones.
+
+
 
 /* =========================
    PRECEDENCIAS
@@ -82,6 +93,15 @@ precedence right INC, DEC;
 start with program;
 
 *******************************************************************
+
+// Asignación de producciones de la gramática.
+// Aquí se definen las reglas que indican cómo los tokens terminales y no terminales
+// se combinan para formar estructuras válidas del lenguaje.
+// Estas producciones permiten al parser reconocer expresiones, sentencias,
+// bloques y funciones, construir el árbol sintáctico y validar que el código
+// fuente cumple con la gramática definida.
+
+
 
 
 /* =========================
@@ -224,6 +244,15 @@ loop_stmt ::= LOOP stmt_list EXIT WHEN expr ENDL END LOOP ENDL
 
 
 *******************************************************************
+// Asignación de las expresiones de la gramática.
+// Aquí se definen las reglas que describen cómo se construyen las expresiones
+// aritméticas, relacionales y lógicas a partir de los tokens terminales.
+// Estas producciones permiten combinar literales, variables, operadores y funciones,
+// respetando la precedencia y asociatividad establecida.
+// El parser utiliza estas reglas para validar la sintaxis de las expresiones
+// y construir el árbol sintáctico correspondiente.
+
+
 /* =========================
    EXPRESIONES (por niveles)
    ========================= */
