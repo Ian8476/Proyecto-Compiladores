@@ -3,6 +3,7 @@ import java.io.*;
 import lexer.Lexer;
 import lexer.sym;
 import java_cup.runtime.Symbol;
+import lexer.Parser;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -30,6 +31,34 @@ public class Main {
                 w.newLine();
                 System.out.println(out);
             }
+
+
+            // Validacion sintactica
+            w.newLine();
+            w.write("Validación sintaxis:");
+            w.newLine();
+
+            // Recreacion del Lexer y Parser para esta validacion
+            // Recrear Lexer y Parser para validación sintáctica
+            try {
+                Reader reader2 = new FileReader("input/prueba.txt");
+                Lexer lexer2 = new Lexer(reader2);
+                Parser parser = new Parser(lexer2);
+                parser.parse(); // si no lanza excepción => aceptado
+                //w.write("ACCEPTED");
+                //w.newLine();
+                System.out.println("\n=== VALIDACIÓN SINTÁCTICA ===");
+                System.out.println("ACCEPTED");
+            } catch (Exception e) {
+                //w.write("REJECTED: " + e.getMessage());
+                //w.newLine();
+                System.err.println("REJECTED: " + e.getMessage());
+            }
+
+
+
+
+
         }
 
     }
