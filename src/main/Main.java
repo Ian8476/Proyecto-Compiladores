@@ -34,25 +34,37 @@ public class Main {
 
 
             // Validacion sintactica
-            w.newLine();
-            w.write("Validación sintaxis:");
-            w.newLine();
+            //w.newLine(); es para escribir en el archivo de salida
+            //w.newLine();
+            //w.write("Validación sintaxis:");
+            //w.newLine();
 
             // Recreacion del Lexer y Parser para esta validacion
             // Recrear Lexer y Parser para validación sintáctica
-            try {
-                Reader reader2 = new FileReader("input/prueba.txt");
+            try (Reader reader2 = new FileReader("input/prueba.txt")) {
                 Lexer lexer2 = new Lexer(reader2);
-                Parser parser = new Parser(lexer2);
-                parser.parse(); // si no lanza excepción => aceptado
-                //w.write("ACCEPTED");
-                //w.newLine();
-                System.out.println("\n=== VALIDACIÓN SINTÁCTICA ===");
-                System.out.println("ACCEPTED");
-            } catch (Exception e) {
-                //w.write("REJECTED: " + e.getMessage());
-                //w.newLine();
-                System.err.println("REJECTED: " + e.getMessage());
+                // Crear el parser
+                @SuppressWarnings("deprecation")
+                java_cup.runtime.SymbolFactory sf = new java_cup.runtime.DefaultSymbolFactory();
+                Parser parser = new Parser(lexer2, sf);
+                try {
+                    parser.parse(); // si no lanza excepción es aceptado
+                    // Escritura del resultado en el archivo de salida
+                    w.write("ACCEPTED");
+                    w.newLine();
+                    w.flush();
+                    // También imprimir en consola
+                    System.out.println("\n=== VALIDACIÓN SINTÁCTICA ===");
+                    System.out.println("ACCEPTED");
+                } catch (Exception e) {
+                    // Escritura del resultado en el archivo de salida
+                    w.write("REJECTED: " + e.getMessage());
+                    w.newLine();
+                    w.flush();
+                    // También imprimir en consola
+                    System.err.println("REJECTED: " + e.getMessage());
+                    e.printStackTrace(System.err);
+                }
             }
 
 

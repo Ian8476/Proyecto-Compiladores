@@ -167,5 +167,4 @@ RETURN (54), , 39, 5
 IDENT (13), x, 39, 12
 ENDL (6), , 39, 14
 BLOQCR (45), , 40, 1
-
-Validación sintaxis:
+REJECTED: Can't recover from previous error(s)
