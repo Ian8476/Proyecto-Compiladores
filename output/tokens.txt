@@ -169,4 +169,3 @@ ENDL (6), , 39, 14
 BLOQCR (45), , 40, 1
 
 Validación sintaxis:
-REJECTED: Can't recover from previous error(s)
