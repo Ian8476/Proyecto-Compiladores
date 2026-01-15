@@ -105,7 +105,7 @@ lista_params ::= tipo_base IDENT
                ;
 
 /* navidad: único main, tipo coal, sin parámetros */
-navidad_decl ::= T_COAL MAIN PARENTizq PARENder bloque_bloq
+navidad_decl ::= T_COAL IDENT PARENTizq PARENder bloque_bloq
                ;
 
 /* -------- Tipos -------- */

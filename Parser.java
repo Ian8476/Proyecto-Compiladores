@@ -261,7 +261,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\002\000\004\054\154\001\002\000\004\053\155\001\002" +
     "\000\004\020\156\001\002\000\004\054\157\001\002\000" +
     "\006\010\uffec\025\uffec\001\002\000\014\011\016\012\012" +
-    "\013\011\014\013\015\015\001\002\000\004\004\164\001" +
+    "\013\011\014\013\015\015\001\002\000\004\017\164\001" +
     "\002\000\004\002\000\001\002\000\006\005\ufff9\016\ufff9" +
     "\001\002\000\004\051\165\001\002\000\004\052\166\001" +
     "\002\000\004\056\167\001\002\000\046\007\uffe3\017\uffe3" +
@@ -690,7 +690,7 @@ class CUP$Parser$actions {
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 14: // navidad_decl ::= T_COAL MAIN PARENTizq PARENder bloque_bloq 
+          case 14: // navidad_decl ::= T_COAL IDENT PARENTizq PARENder bloque_bloq 
             {
               Object RESULT =null;
 
