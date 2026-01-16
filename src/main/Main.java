@@ -4,6 +4,7 @@ import lexer.Lexer;
 import lexer.sym;
 import java_cup.runtime.Symbol;
 import lexer.Parser;
+import arbolSintactico.arbol;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -48,7 +49,7 @@ public class Main {
                 java_cup.runtime.SymbolFactory sf = new java_cup.runtime.DefaultSymbolFactory();
                 Parser parser = new Parser(lexer2, sf);
                 try {
-                    parser.parse(); // si no lanza excepción es aceptado
+                    Symbol result = parser.parse(); // Captura el AST
                     // Escritura del resultado en el archivo de salida
                     w.write("ACCEPTED");
                     w.newLine();
@@ -56,6 +57,20 @@ public class Main {
                     // También imprimir en consola
                     System.out.println("\n=== VALIDACIÓN SINTÁCTICA ===");
                     System.out.println("ACCEPTED");
+                    
+                    // Mostrar el árbol sintáctico
+                    if (result != null && result.value instanceof arbol) {
+                        arbol ast = (arbol) result.value;
+                        System.out.println("\n=== ÁRBOL SINTÁCTICO ===");
+                        System.out.println(ast.toString());
+                        
+                        // Guardar el árbol en el archivo de salida
+                        w.newLine();
+                        w.write("ÁRBOL SINTÁCTICO:");
+                        w.newLine();
+                        w.write(ast.toString());
+                        w.flush();
+                    }
                 } catch (Exception e) {
                     // Escritura del resultado en el archivo de salida
                     w.write("REJECTED: " + e.getMessage());

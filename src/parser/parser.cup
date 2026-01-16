@@ -1,5 +1,6 @@
 package lexer;
 import java_cup.runtime.Symbol;
+import arbolSintactico.arbol;
 
 /* =========================
    TERMINALES (TOKENS)
@@ -24,30 +25,30 @@ terminal BLOQAB, BLOQCR;
 terminal DECIDE, OF, ELSE, END, LOOP, EXIT, WHEN, FOR, RETURN, BREAK;
 
 /* =========================
-   NO TERMINALES (TODO Object)
+   NO TERMINALES (arbol)
    ========================= */
-non terminal Object program;
+non terminal arbol program;
 
-non terminal Object lista_globales, decl_global;
-non terminal Object lista_funciones, funcion, params, lista_params;
-non terminal Object navidad_decl;
+non terminal arbol lista_globales, decl_global;
+non terminal arbol lista_funciones, funcion, params, lista_params;
+non terminal arbol navidad_decl;
 
-non terminal Object bloque_bloq;
-non terminal Object stmt_list, stmt;
+non terminal arbol bloque_bloq;
+non terminal arbol stmt_list, stmt;
 
-non terminal Object tipo_base;
-non terminal Object dims2d_opt;
+non terminal arbol tipo_base;
+non terminal arbol dims2d_opt;
 
-non terminal Object decl_local;
-non terminal Object asignacion;
+non terminal arbol decl_local;
+non terminal arbol asignacion;
 
-non terminal Object expr, expr_or, expr_and, expr_eq, expr_rel, expr_suma, expr_mult, expr_pot, expr_un, prim;
-non terminal Object llamada, args, lista_args;
+non terminal arbol expr, expr_or, expr_and, expr_eq, expr_rel, expr_suma, expr_mult, expr_pot, expr_un, prim;
+non terminal arbol llamada, args, lista_args;
 
-non terminal Object arr_access, arr_init, lista_filas, fila, lista_elems;
+non terminal arbol arr_access, arr_init, lista_filas, fila, lista_elems;
 
-non terminal Object decide_stmt, decide_casos, decide_caso;
-non terminal Object loop_stmt;
+non terminal arbol decide_stmt, decide_casos, decide_caso;
+non terminal arbol loop_stmt;
 
 /* =========================
    PRECEDENCIAS
@@ -70,12 +71,21 @@ start with program;
    ========================= */
 
 /* Programa: globales* funciones* navidad */
-program ::= lista_globales lista_funciones navidad_decl
+program ::= lista_globales:lg lista_funciones:lf navidad_decl:nd
+          {: arbol nodo = new arbol("PROGRAM");
+             if (lg != null) nodo.agregarHijo(lg);
+             if (lf != null) nodo.agregarHijo(lf);
+             nodo.agregarHijo(nd);
+             RESULT = nodo; :}
           ;
 
 /* -------- Globales (world) -------- */
 lista_globales ::= /* empty */
-                 | lista_globales decl_global
+                 {: RESULT = null; :}
+                 | lista_globales:lg decl_global:dg
+                 {: arbol nodo = (lg != null) ? lg : new arbol("GLOBALES");
+                    nodo.agregarHijo(dg);
+                    RESULT = nodo; :}
                  ;
 
 /*
@@ -83,91 +93,188 @@ lista_globales ::= /* empty */
   world tipo id dims? = expr endl
   world tipo id dims? = arr_init endl
 */
-decl_global ::= WORLD tipo_base IDENT dims2d_opt ENDL
-              | WORLD tipo_base IDENT dims2d_opt IGUAL expr ENDL
-              | WORLD tipo_base IDENT dims2d_opt IGUAL arr_init ENDL
+decl_global ::= WORLD tipo_base:tb IDENT:id dims2d_opt ENDL
+              {: arbol nodo = new arbol("DECL_GLOBAL", id.toString());
+                 nodo.agregarHijo(tb);
+                 RESULT = nodo; :}
+              | WORLD tipo_base:tb IDENT:id dims2d_opt IGUAL expr:e ENDL
+              {: arbol nodo = new arbol("DECL_GLOBAL", id.toString());
+                 nodo.agregarHijo(tb);
+                 nodo.agregarHijo(e);
+                 RESULT = nodo; :}
+              | WORLD tipo_base:tb IDENT:id dims2d_opt IGUAL arr_init:ai ENDL
+              {: arbol nodo = new arbol("DECL_GLOBAL", id.toString());
+                 nodo.agregarHijo(tb);
+                 nodo.agregarHijo(ai);
+                 RESULT = nodo; :}
               ;
 
 /* -------- Funciones (gift) -------- */
 lista_funciones ::= /* empty */
-                  | lista_funciones funcion
+                  {: RESULT = null; :}
+                  | lista_funciones:lf funcion:f
+                  {: arbol nodo = (lf != null) ? lf : new arbol("FUNCIONES");
+                     nodo.agregarHijo(f);
+                     RESULT = nodo; :}
                   ;
 
-funcion ::= GIFT tipo_base IDENT PARENTizq params PARENder bloque_bloq
+funcion ::= GIFT tipo_base:tb IDENT:id PARENTizq params:p PARENder bloque_bloq:bb
+          {: arbol nodo = new arbol("FUNCION", id.toString());
+             nodo.agregarHijo(tb);
+             if (p != null) nodo.agregarHijo(p);
+             nodo.agregarHijo(bb);
+             RESULT = nodo; :}
           ;
 
 params ::= /* empty */
-         | lista_params
+         {: RESULT = null; :}
+         | lista_params:lp
+         {: RESULT = lp; :}
          ;
 
-lista_params ::= tipo_base IDENT
-               | lista_params COMA tipo_base IDENT
+lista_params ::= tipo_base:tb IDENT:id
+               {: arbol nodo = new arbol("PARAMETROS");
+                  arbol param = new arbol("PARAM", id.toString());
+                  param.agregarHijo(tb);
+                  nodo.agregarHijo(param);
+                  RESULT = nodo; :}
+               | lista_params:lp COMA tipo_base:tb IDENT:id
+               {: arbol param = new arbol("PARAM", id.toString());
+                  param.agregarHijo(tb);
+                  lp.agregarHijo(param);
+                  RESULT = lp; :}
                ;
 
 /* navidad: único main, tipo coal, sin parámetros */
-navidad_decl ::= T_COAL IDENT PARENTizq PARENder bloque_bloq
+navidad_decl ::= T_COAL IDENT:id PARENTizq PARENder bloque_bloq:bb
+               {: arbol nodo = new arbol("MAIN", id.toString());
+                  nodo.agregarHijo(bb);
+                  RESULT = nodo; :}
                ;
 
 /* -------- Tipos -------- */
-tipo_base ::= T_INT
-            | T_FLOAT
-            | T_BOOL
-            | T_CHAR
-            | T_STRING
+tipo_base ::= T_INT    {: RESULT = new arbol("TIPO", "int"); :}
+            | T_FLOAT  {: RESULT = new arbol("TIPO", "float"); :}
+            | T_BOOL   {: RESULT = new arbol("TIPO", "bool"); :}
+            | T_CHAR   {: RESULT = new arbol("TIPO", "char"); :}
+            | T_STRING {: RESULT = new arbol("TIPO", "string"); :}
             ;
 
 /* -------- Dimensiones opcionales 2D -------- */
 dims2d_opt ::= /* empty */
-             | CORCHizq INT_LIT CORCHder CORCHizq INT_LIT CORCHder
+             {: RESULT = null; :}
+             | CORCHizq INT_LIT:n1 CORCHder CORCHizq INT_LIT:n2 CORCHder
+             {: arbol nodo = new arbol("DIMS", n1.toString() + "x" + n2.toString());
+                RESULT = nodo; :}
              ;
 
 /* -------- Arreglos: acceso e init -------- */
-arr_access ::= IDENT CORCHizq expr CORCHder CORCHizq expr CORCHder
+arr_access ::= IDENT:id CORCHizq expr:e1 CORCHder CORCHizq expr:e2 CORCHder
+             {: arbol nodo = new arbol("ARRAY_ACCESS", id.toString());
+                nodo.agregarHijo(e1);
+                nodo.agregarHijo(e2);
+                RESULT = nodo; :}
              ;
 
 /* init con ¡ ... ! como matriz: ¡ ¡a,b! , ¡c,d! ! */
-arr_init ::= BLOQAB lista_filas BLOQCR
+arr_init ::= BLOQAB lista_filas:lf BLOQCR
+           {: arbol nodo = new arbol("ARRAY_INIT");
+              nodo.agregarHijo(lf);
+              RESULT = nodo; :}
            ;
 
-lista_filas ::= fila
-              | lista_filas COMA fila
+lista_filas ::= fila:f
+              {: arbol nodo = new arbol("FILAS");
+                 nodo.agregarHijo(f);
+                 RESULT = nodo; :}
+              | lista_filas:lf COMA fila:f
+              {: lf.agregarHijo(f);
+                 RESULT = lf; :}
               ;
 
-fila ::= BLOQAB lista_elems BLOQCR
+fila ::= BLOQAB lista_elems:le BLOQCR
+       {: arbol nodo = new arbol("FILA");
+          nodo.agregarHijo(le);
+          RESULT = nodo; :}
        ;
 
-lista_elems ::= expr
-              | lista_elems COMA expr
+lista_elems ::= expr:e
+              {: arbol nodo = new arbol("ELEMENTOS");
+                 nodo.agregarHijo(e);
+                 RESULT = nodo; :}
+              | lista_elems:le COMA expr:e
+              {: le.agregarHijo(e);
+                 RESULT = le; :}
               ;
 
 /* -------- Bloques -------- */
-bloque_bloq ::= BLOQAB stmt_list BLOQCR
+bloque_bloq ::= BLOQAB stmt_list:sl BLOQCR
+              {: arbol nodo = new arbol("BLOQUE");
+                 if (sl != null) nodo.agregarHijo(sl);
+                 RESULT = nodo; :}
               ;
 
 stmt_list ::= /* empty */
-            | stmt_list stmt
+            {: RESULT = null; :}
+            | stmt_list:sl stmt:s
+            {: arbol nodo = (sl != null) ? sl : new arbol("SENTENCIAS");
+               nodo.agregarHijo(s);
+               RESULT = nodo; :}
             ;
 
 /* -------- Sentencias (endl termina) -------- */
-stmt ::= decl_local ENDL
-       | asignacion ENDL
-       | expr ENDL
-       | RETURN expr ENDL
+stmt ::= decl_local:dl ENDL
+       {: RESULT = dl; :}
+       | asignacion:a ENDL
+       {: RESULT = a; :}
+       | expr:e ENDL
+       {: RESULT = e; :}
+       | RETURN expr:e ENDL
+       {: arbol nodo = new arbol("RETURN");
+          nodo.agregarHijo(e);
+          RESULT = nodo; :}
        | BREAK ENDL
-       | decide_stmt
-       | loop_stmt
-       | FOR PARENTizq asignacion ENDL expr ENDL asignacion PARENder bloque_bloq
+       {: RESULT = new arbol("BREAK"); :}
+       | decide_stmt:ds
+       {: RESULT = ds; :}
+       | loop_stmt:ls
+       {: RESULT = ls; :}
+       | FOR PARENTizq asignacion:a1 ENDL expr:e ENDL asignacion:a2 PARENder bloque_bloq:bb
+       {: arbol nodo = new arbol("FOR");
+          nodo.agregarHijo(a1);
+          nodo.agregarHijo(e);
+          nodo.agregarHijo(a2);
+          nodo.agregarHijo(bb);
+          RESULT = nodo; :}
        ;
 
 /* local tipo id dims? (= expr | = arr_init)? */
-decl_local ::= LOCAL tipo_base IDENT dims2d_opt
-             | LOCAL tipo_base IDENT dims2d_opt IGUAL expr
-             | LOCAL tipo_base IDENT dims2d_opt IGUAL arr_init
+decl_local ::= LOCAL tipo_base:tb IDENT:id dims2d_opt
+             {: arbol nodo = new arbol("DECL_LOCAL", id.toString());
+                nodo.agregarHijo(tb);
+                RESULT = nodo; :}
+             | LOCAL tipo_base:tb IDENT:id dims2d_opt IGUAL expr:e
+             {: arbol nodo = new arbol("DECL_LOCAL", id.toString());
+                nodo.agregarHijo(tb);
+                nodo.agregarHijo(e);
+                RESULT = nodo; :}
+             | LOCAL tipo_base:tb IDENT:id dims2d_opt IGUAL arr_init:ai
+             {: arbol nodo = new arbol("DECL_LOCAL", id.toString());
+                nodo.agregarHijo(tb);
+                nodo.agregarHijo(ai);
+                RESULT = nodo; :}
              ;
 
 /* asignación: id = expr | A[i][j] = expr */
-asignacion ::= IDENT IGUAL expr
-             | arr_access IGUAL expr
+asignacion ::= IDENT:id IGUAL expr:e
+             {: arbol nodo = new arbol("ASIGNACION", id.toString());
+                nodo.agregarHijo(e);
+                RESULT = nodo; :}
+             | arr_access:aa IGUAL expr:e
+             {: arbol nodo = new arbol("ASIGNACION_ARRAY");
+                nodo.agregarHijo(aa);
+                nodo.agregarHijo(e);
+                RESULT = nodo; :}
              ;
 
 /* -------- decide of --------
@@ -176,15 +283,33 @@ decide of
  (else -> bloque)?
 end decide endl
 */
-decide_stmt ::= DECIDE OF decide_casos END DECIDE ENDL
-              | DECIDE OF decide_casos ELSE ARROW bloque_bloq END DECIDE ENDL
+decide_stmt ::= DECIDE OF decide_casos:dc END DECIDE ENDL
+              {: arbol nodo = new arbol("DECIDE");
+                 nodo.agregarHijo(dc);
+                 RESULT = nodo; :}
+              | DECIDE OF decide_casos:dc ELSE ARROW bloque_bloq:bb END DECIDE ENDL
+              {: arbol nodo = new arbol("DECIDE");
+                 nodo.agregarHijo(dc);
+                 arbol elseNodo = new arbol("ELSE");
+                 elseNodo.agregarHijo(bb);
+                 nodo.agregarHijo(elseNodo);
+                 RESULT = nodo; :}
               ;
 
-decide_casos ::= decide_caso
-               | decide_casos decide_caso
+decide_casos ::= decide_caso:dc
+               {: arbol nodo = new arbol("CASOS");
+                  nodo.agregarHijo(dc);
+                  RESULT = nodo; :}
+               | decide_casos:dcs decide_caso:dc
+               {: dcs.agregarHijo(dc);
+                  RESULT = dcs; :}
                ;
 
-decide_caso ::= PARENTizq expr PARENder ARROW bloque_bloq
+decide_caso ::= PARENTizq expr:e PARENder ARROW bloque_bloq:bb
+              {: arbol nodo = new arbol("CASO");
+                 nodo.agregarHijo(e);
+                 nodo.agregarHijo(bb);
+                 RESULT = nodo; :}
               ;
 
 /* -------- loop (Ada) --------
@@ -193,76 +318,182 @@ loop
   exit when condicion endl
 end loop endl
 */
-loop_stmt ::= LOOP stmt_list EXIT WHEN expr ENDL END LOOP ENDL
+loop_stmt ::= LOOP stmt_list:sl EXIT WHEN expr:e ENDL END LOOP ENDL
+            {: arbol nodo = new arbol("LOOP");
+               if (sl != null) nodo.agregarHijo(sl);
+               arbol salida = new arbol("EXIT");
+               salida.agregarHijo(e);
+               nodo.agregarHijo(salida);
+               RESULT = nodo; :}
             ;
 
 /* =========================
    EXPRESIONES (por niveles)
    ========================= */
-expr ::= expr_or
+expr ::= expr_or:eo
+       {: RESULT = eo; :}
        ;
 
-expr_or ::= expr_or OR expr_and
-          | expr_and
+expr_or ::= expr_or:eo OR expr_and:ea
+          {: arbol nodo = new arbol("OPERACION", "OR");
+             nodo.agregarHijo(eo);
+             nodo.agregarHijo(ea);
+             RESULT = nodo; :}
+          | expr_and:ea
+          {: RESULT = ea; :}
           ;
 
-expr_and ::= expr_and AND expr_eq
-           | expr_eq
+expr_and ::= expr_and:ea AND expr_eq:ee
+           {: arbol nodo = new arbol("OPERACION", "AND");
+              nodo.agregarHijo(ea);
+              nodo.agregarHijo(ee);
+              RESULT = nodo; :}
+           | expr_eq:ee
+           {: RESULT = ee; :}
            ;
 
-expr_eq ::= expr_eq EQ expr_rel
-          | expr_eq NEQ expr_rel
-          | expr_rel
+expr_eq ::= expr_eq:ee EQ expr_rel:er
+          {: arbol nodo = new arbol("OPERACION", "==");
+             nodo.agregarHijo(ee);
+             nodo.agregarHijo(er);
+             RESULT = nodo; :}
+          | expr_eq:ee NEQ expr_rel:er
+          {: arbol nodo = new arbol("OPERACION", "!=");
+             nodo.agregarHijo(ee);
+             nodo.agregarHijo(er);
+             RESULT = nodo; :}
+          | expr_rel:er
+          {: RESULT = er; :}
           ;
 
-expr_rel ::= expr_rel LT expr_suma
-           | expr_rel LE expr_suma
-           | expr_rel GT expr_suma
-           | expr_rel GE expr_suma
-           | expr_suma
+expr_rel ::= expr_rel:er LT expr_suma:es
+           {: arbol nodo = new arbol("OPERACION", "<");
+              nodo.agregarHijo(er);
+              nodo.agregarHijo(es);
+              RESULT = nodo; :}
+           | expr_rel:er LE expr_suma:es
+           {: arbol nodo = new arbol("OPERACION", "<=");
+              nodo.agregarHijo(er);
+              nodo.agregarHijo(es);
+              RESULT = nodo; :}
+           | expr_rel:er GT expr_suma:es
+           {: arbol nodo = new arbol("OPERACION", ">");
+              nodo.agregarHijo(er);
+              nodo.agregarHijo(es);
+              RESULT = nodo; :}
+           | expr_rel:er GE expr_suma:es
+           {: arbol nodo = new arbol("OPERACION", ">=");
+              nodo.agregarHijo(er);
+              nodo.agregarHijo(es);
+              RESULT = nodo; :}
+           | expr_suma:es
+           {: RESULT = es; :}
            ;
 
-expr_suma ::= expr_suma SUMA expr_mult
-            | expr_suma RESTA expr_mult
-            | expr_mult
+expr_suma ::= expr_suma:es SUMA expr_mult:em
+            {: arbol nodo = new arbol("OPERACION", "+");
+               nodo.agregarHijo(es);
+               nodo.agregarHijo(em);
+               RESULT = nodo; :}
+            | expr_suma:es RESTA expr_mult:em
+            {: arbol nodo = new arbol("OPERACION", "-");
+               nodo.agregarHijo(es);
+               nodo.agregarHijo(em);
+               RESULT = nodo; :}
+            | expr_mult:em
+            {: RESULT = em; :}
             ;
 
-expr_mult ::= expr_mult MULTIPLICACION expr_pot
-            | expr_mult DIVISION expr_pot
-            | expr_mult INTDIV expr_pot
-            | expr_mult MODULO expr_pot
-            | expr_pot
+expr_mult ::= expr_mult:em MULTIPLICACION expr_pot:ep
+            {: arbol nodo = new arbol("OPERACION", "*");
+               nodo.agregarHijo(em);
+               nodo.agregarHijo(ep);
+               RESULT = nodo; :}
+            | expr_mult:em DIVISION expr_pot:ep
+            {: arbol nodo = new arbol("OPERACION", "/");
+               nodo.agregarHijo(em);
+               nodo.agregarHijo(ep);
+               RESULT = nodo; :}
+            | expr_mult:em INTDIV expr_pot:ep
+            {: arbol nodo = new arbol("OPERACION", "//");
+               nodo.agregarHijo(em);
+               nodo.agregarHijo(ep);
+               RESULT = nodo; :}
+            | expr_mult:em MODULO expr_pot:ep
+            {: arbol nodo = new arbol("OPERACION", "%");
+               nodo.agregarHijo(em);
+               nodo.agregarHijo(ep);
+               RESULT = nodo; :}
+            | expr_pot:ep
+            {: RESULT = ep; :}
             ;
 
-expr_pot ::= expr_un POTENCIA expr_pot
-           | expr_un
+expr_pot ::= expr_un:eu POTENCIA expr_pot:ep
+           {: arbol nodo = new arbol("OPERACION", "^");
+              nodo.agregarHijo(eu);
+              nodo.agregarHijo(ep);
+              RESULT = nodo; :}
+           | expr_un:eu
+           {: RESULT = eu; :}
            ;
 
-expr_un ::= RESTA expr_un
-          | INC expr_un
-          | DEC expr_un
-          | NOT expr_un
-          | prim
+expr_un ::= RESTA expr_un:eu
+          {: arbol nodo = new arbol("OPERACION", "-unario");
+             nodo.agregarHijo(eu);
+             RESULT = nodo; :}
+          | INC expr_un:eu
+          {: arbol nodo = new arbol("OPERACION", "++pre");
+             nodo.agregarHijo(eu);
+             RESULT = nodo; :}
+          | DEC expr_un:eu
+          {: arbol nodo = new arbol("OPERACION", "--pre");
+             nodo.agregarHijo(eu);
+             RESULT = nodo; :}
+          | NOT expr_un:eu
+          {: arbol nodo = new arbol("OPERACION", "NOT");
+             nodo.agregarHijo(eu);
+             RESULT = nodo; :}
+          | prim:p
+          {: RESULT = p; :}
           ;
 
-prim ::= INT_LIT
-       | FLOAT_LIT
-       | BOOL_LIT
-       | CHAR_LIT
-       | STRING_LIT
-       | IDENT
-       | arr_access
-       | llamada
-       | PARENTizq expr PARENder
+prim ::= INT_LIT:n
+       {: RESULT = new arbol("LITERAL_INT", n.toString()); :}
+       | FLOAT_LIT:f
+       {: RESULT = new arbol("LITERAL_FLOAT", f.toString()); :}
+       | BOOL_LIT:b
+       {: RESULT = new arbol("LITERAL_BOOL", b.toString()); :}
+       | CHAR_LIT:c
+       {: RESULT = new arbol("LITERAL_CHAR", c.toString()); :}
+       | STRING_LIT:s
+       {: RESULT = new arbol("LITERAL_STRING", s.toString()); :}
+       | IDENT:id
+       {: RESULT = new arbol("IDENT", id.toString()); :}
+       | arr_access:aa
+       {: RESULT = aa; :}
+       | llamada:ll
+       {: RESULT = ll; :}
+       | PARENTizq expr:e PARENder
+       {: RESULT = e; :}
        ;
 
-llamada ::= IDENT PARENTizq args PARENder
+llamada ::= IDENT:id PARENTizq args:a PARENder
+          {: arbol nodo = new arbol("LLAMADA", id.toString());
+             if (a != null) nodo.agregarHijo(a);
+             RESULT = nodo; :}
           ;
 
 args ::= /* empty */
-       | lista_args
+       {: RESULT = null; :}
+       | lista_args:la
+       {: RESULT = la; :}
        ;
 
-lista_args ::= expr
-             | lista_args COMA expr
+lista_args ::= expr:e
+             {: arbol nodo = new arbol("ARGUMENTOS");
+                nodo.agregarHijo(e);
+                RESULT = nodo; :}
+             | lista_args:la COMA expr:e
+             {: la.agregarHijo(e);
+                RESULT = la; :}
              ;

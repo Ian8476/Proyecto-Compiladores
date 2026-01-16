@@ -48,3 +48,38 @@ IDENT (13), resultado, 10, 12
 ENDL (6), , 10, 22
 BLOQCR (45), , 11, 1
 ACCEPTED
+
+ÁRBOL SINTÁCTICO:
+PROGRAM
+  GLOBALES
+    DECL_GLOBAL [x]
+      TIPO [int]
+      LITERAL_INT [5]
+  FUNCIONES
+    FUNCION [suma]
+      TIPO [int]
+      PARAMETROS
+        PARAM [a]
+          TIPO [int]
+        PARAM [b]
+          TIPO [int]
+      BLOQUE
+        SENTENCIAS
+          DECL_LOCAL [resultado]
+            TIPO [int]
+            OPERACION [+]
+              IDENT [a]
+              IDENT [b]
+          RETURN
+            IDENT [resultado]
+  MAIN [main]
+    BLOQUE
+      SENTENCIAS
+        DECL_LOCAL [resultado]
+          TIPO [int]
+          LLAMADA [suma]
+            ARGUMENTOS
+              IDENT [x]
+              LITERAL_INT [3]
+        RETURN
+          IDENT [resultado]
