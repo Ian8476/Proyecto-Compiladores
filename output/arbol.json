@@ -1,0 +1,161 @@
+{
+  "tipo": "PROGRAM",
+  "hijos": [
+    {
+      "tipo": "GLOBALES",
+      "hijos": [
+        {
+          "tipo": "DECL_GLOBAL",
+          "valor": "x",
+          "hijos": [
+            {
+              "tipo": "TIPO",
+              "valor": "int"
+            },
+            {
+              "tipo": "LITERAL_INT",
+              "valor": "5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tipo": "FUNCIONES",
+      "hijos": [
+        {
+          "tipo": "FUNCION",
+          "valor": "suma",
+          "hijos": [
+            {
+              "tipo": "TIPO",
+              "valor": "int"
+            },
+            {
+              "tipo": "PARAMETROS",
+              "hijos": [
+                {
+                  "tipo": "PARAM",
+                  "valor": "a",
+                  "hijos": [
+                    {
+                      "tipo": "TIPO",
+                      "valor": "int"
+                    }
+                  ]
+                },
+                {
+                  "tipo": "PARAM",
+                  "valor": "b",
+                  "hijos": [
+                    {
+                      "tipo": "TIPO",
+                      "valor": "int"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tipo": "BLOQUE",
+              "hijos": [
+                {
+                  "tipo": "SENTENCIAS",
+                  "hijos": [
+                    {
+                      "tipo": "DECL_LOCAL",
+                      "valor": "resultado",
+                      "hijos": [
+                        {
+                          "tipo": "TIPO",
+                          "valor": "int"
+                        },
+                        {
+                          "tipo": "OPERACION",
+                          "valor": "+",
+                          "hijos": [
+                            {
+                              "tipo": "IDENT",
+                              "valor": "a"
+                            },
+                            {
+                              "tipo": "IDENT",
+                              "valor": "b"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tipo": "RETURN",
+                      "hijos": [
+                        {
+                          "tipo": "IDENT",
+                          "valor": "resultado"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tipo": "MAIN",
+      "valor": "main",
+      "hijos": [
+        {
+          "tipo": "BLOQUE",
+          "hijos": [
+            {
+              "tipo": "SENTENCIAS",
+              "hijos": [
+                {
+                  "tipo": "DECL_LOCAL",
+                  "valor": "resultado",
+                  "hijos": [
+                    {
+                      "tipo": "TIPO",
+                      "valor": "int"
+                    },
+                    {
+                      "tipo": "LLAMADA",
+                      "valor": "suma",
+                      "hijos": [
+                        {
+                          "tipo": "ARGUMENTOS",
+                          "hijos": [
+                            {
+                              "tipo": "IDENT",
+                              "valor": "x"
+                            },
+                            {
+                              "tipo": "LITERAL_INT",
+                              "valor": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tipo": "RETURN",
+                  "hijos": [
+                    {
+                      "tipo": "IDENT",
+                      "valor": "resultado"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

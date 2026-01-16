@@ -61,4 +61,36 @@ public class arbol {
         }
         return s;
     }
+    
+    // Convertir a JSON
+    public String toJSON() {
+        StringBuilder json = new StringBuilder();
+        json.append("{\"tipo\":\"").append(escaparJSON(tipo)).append("\"");
+        
+        if (valor != null && !valor.isEmpty()) {
+            json.append(",\"valor\":\"").append(escaparJSON(valor)).append("\"");
+        }
+        
+        if (!hijos.isEmpty()) {
+            json.append(",\"hijos\":[");
+            for (int i = 0; i < hijos.size(); i++) {
+                json.append(hijos.get(i).toJSON());
+                if (i < hijos.size() - 1) json.append(",");
+            }
+            json.append("]");
+        }
+        
+        json.append("}");
+        return json.toString();
+    }
+    
+    // Escapar caracteres especiales para JSON
+    private String escaparJSON(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
 }

@@ -70,6 +70,15 @@ public class Main {
                         w.newLine();
                         w.write(ast.toString());
                         w.flush();
+                        
+                        // Guardar el árbol como JSON
+                        try (java.io.BufferedWriter wJson = new java.io.BufferedWriter(
+                                new java.io.FileWriter(new java.io.File(outDir, "arbol.json")))) {
+                            String jsonFormateado = formatearJSON(ast.toJSON());
+                            wJson.write(jsonFormateado);
+                            wJson.flush();
+                            System.out.println("\n=== JSON guardado en output/arbol.json ===");
+                        }
                     }
                 } catch (Exception e) {
                     // Escritura del resultado en el archivo de salida
@@ -88,5 +97,61 @@ public class Main {
 
         }
 
+    }
+    
+    // Método para formatear JSON con indentación
+    public static String formatearJSON(String json) {
+        StringBuilder resultado = new StringBuilder();
+        int indentacion = 0;
+        boolean enString = false;
+        
+        for (int i = 0; i < json.length(); i++) {
+            char c = json.charAt(i);
+            char prev = i > 0 ? json.charAt(i - 1) : ' ';
+            
+            // Manejar strings
+            if (c == '"' && prev != '\\') {
+                enString = !enString;
+                resultado.append(c);
+            } else if (!enString) {
+                switch (c) {
+                    case '{':
+                    case '[':
+                        resultado.append(c).append("\n");
+                        indentacion++;
+                        agregarIndentacion(resultado, indentacion);
+                        break;
+                    case '}':
+                    case ']':
+                        resultado.append("\n");
+                        indentacion--;
+                        agregarIndentacion(resultado, indentacion);
+                        resultado.append(c);
+                        break;
+                    case ',':
+                        resultado.append(c).append("\n");
+                        agregarIndentacion(resultado, indentacion);
+                        break;
+                    case ':':
+                        resultado.append(c).append(" ");
+                        break;
+                    case ' ':
+                        // Ignorar espacios en blanco fuera de strings
+                        break;
+                    default:
+                        resultado.append(c);
+                }
+            } else {
+                resultado.append(c);
+            }
+        }
+        
+        return resultado.toString();
+    }
+    
+    private static void agregarIndentacion(StringBuilder sb, int nivel) {
+        for (int i = 0; i < nivel; i++) {
+            sb.append("  ");
+        }
     }
 }
