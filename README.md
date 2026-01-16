@@ -7,7 +7,7 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Firma_TEC.svg/1200px-Firma_TEC.svg.png" alt="Logo" width="500" height="80">
   </a>
 
-  <h3 align="center">Proyecto #1 Analisis lexico</h3>
+  <h3 align="center">Proyecto #2 Analisis Sintactico</h3>
 
   <p align="center">
     Compiladores e intérptetes
@@ -24,6 +24,6 @@
   <br />
   
   <p align="center">
-    Verano 2025
+    Verano 2026
   </p>
 </div>
