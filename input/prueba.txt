@@ -1,15 +1,12 @@
 world int contador endl
-world char matriz[2][3] = ¡
-    ¡ 'a', 'b', 'c' !
-    ¡ 'd', 'e', 'f' !
-! endl
+world char matriz[2][3] = ¡ ¡ 'a', 'b', 'c' ! , ¡ 'd', 'e', 'f' ! ! endl
 
 gift int suma¿int a, int b? ¡
     local int resultado = a + b endl
     return resultado endl
 !
 
-coal navidad¿? ¡
+coal main¿? ¡
     local int x = 5 endl
     local int y = 10 endl
 
@@ -22,9 +19,9 @@ coal navidad¿? ¡
         ¿ x == 10 ? -> ¡
             x = x + 1 endl
         !
-    else -> ¡
+        else -> ¡
             x = 0 endl
-    !
+        !
     end decide endl
 
     loop
