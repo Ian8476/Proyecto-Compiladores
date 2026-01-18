@@ -145,9 +145,8 @@ lista_params ::= tipo_base:tb IDENT:id
                   RESULT = lp; :}
                ;
 
-/* navidad: único main, tipo coal, sin parámetros */
-navidad_decl ::= T_COAL IDENT:id PARENTizq PARENder bloque_bloq:bb
-               {: arbol nodo = new arbol("MAIN", id.toString());
+navidad_decl ::= T_COAL MAIN PARENTizq PARENder bloque_bloq:bb
+               {: arbol nodo = new arbol("MAIN", "navidad");
                   nodo.agregarHijo(bb);
                   RESULT = nodo; :}
                ;

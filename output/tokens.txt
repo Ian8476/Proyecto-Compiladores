@@ -54,10 +54,10 @@ IDENT (13), resultado, 6, 12
 ENDL (6), , 6, 22
 BLOQCR (45), , 7, 1
 T_COAL (12), , 9, 1
-IDENT (13), main, 9, 6
-PARENTizq (39), , 9, 10
-PARENder (40), , 9, 11
-BLOQAB (44), , 9, 13
+MAIN (2), , 9, 6
+PARENTizq (39), , 9, 13
+PARENder (40), , 9, 14
+BLOQAB (44), , 9, 16
 LOCAL (5), , 10, 5
 T_INT (7), , 10, 11
 IDENT (13), x, 10, 15
@@ -206,7 +206,7 @@ PROGRAM
               IDENT [b]
           RETURN
             IDENT [resultado]
-  MAIN [main]
+  MAIN [navidad]
     BLOQUE
       SENTENCIAS
         DECL_LOCAL [x]

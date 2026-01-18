@@ -6,7 +6,7 @@ gift int suma¿int a, int b? ¡
     return resultado endl
 !
 
-coal main¿? ¡
+coal navidad¿? ¡
     local int x = 5 endl
     local int y = 10 endl
 

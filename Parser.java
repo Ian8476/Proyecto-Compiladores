@@ -262,7 +262,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\002\000\004\054\154\001\002\000\004\053\155\001\002" +
     "\000\004\020\156\001\002\000\004\054\157\001\002\000" +
     "\006\010\uffec\025\uffec\001\002\000\014\011\016\012\012" +
-    "\013\011\014\013\015\015\001\002\000\004\017\164\001" +
+    "\013\011\014\013\015\015\001\002\000\004\004\164\001" +
     "\002\000\004\002\000\001\002\000\006\005\ufff9\016\ufff9" +
     "\001\002\000\004\051\165\001\002\000\004\052\166\001" +
     "\002\000\004\056\167\001\002\000\046\007\uffe3\017\uffe3" +
@@ -793,16 +793,13 @@ class CUP$Parser$actions {
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 14: // navidad_decl ::= T_COAL IDENT PARENTizq PARENder bloque_bloq 
+          case 14: // navidad_decl ::= T_COAL MAIN PARENTizq PARENder bloque_bloq 
             {
               arbol RESULT =null;
-		int idleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
-		int idright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
-		Object id = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		int bbleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bbright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		arbol bb = (arbol)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 arbol nodo = new arbol("MAIN", id.toString());
+		 arbol nodo = new arbol("MAIN", "navidad");
                   nodo.agregarHijo(bb);
                   RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("navidad_decl",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
