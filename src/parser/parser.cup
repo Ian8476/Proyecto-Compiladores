@@ -216,6 +216,7 @@ bloque_bloq ::= BLOQAB stmt_list:sl BLOQCR
                  RESULT = nodo; :}
               ;
 
+/* ------------ actualizacion con error -----------*/
 stmt_list ::= /* empty */
             {: RESULT = null; :}
             | stmt_list:sl stmt:s

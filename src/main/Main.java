@@ -6,7 +6,13 @@ import java_cup.runtime.Symbol;
 import lexer.Parser;
 import arbolSintactico.arbol;
 import util.ErrorHandler;
-
+/**
+ * Clase principal para ejecutar el análisis léxico y sintáctico.
+ * Lee un archivo de entrada, genera tokens, valida la sintaxis,
+ * @author Duan Antonio Espinoza
+ * @author Ian Canales Rodriguez
+ * 
+ */
 public class Main {
     public static void main(String[] args) throws Exception {
         
@@ -94,7 +100,7 @@ public class Main {
                         System.out.println("\n=== REPORTE DE ERRORES GENERADO ===");
                         ErrorHandler.mostrarResumen();
                     } else {
-                        System.out.println("\n Compilación sin errores");
+                        System.out.println("\n La Compilación está sin errores");
                     }
                 } catch (Exception e) {
                     // Escritura del resultado en el archivo de salida
@@ -170,6 +176,7 @@ public class Main {
         return resultado.toString();
     }
     
+    // Método auxiliar para agregar indentación
     private static void agregarIndentacion(StringBuilder sb, int nivel) {
         for (int i = 0; i < nivel; i++) {
             sb.append("  ");
@@ -344,6 +351,7 @@ public class Main {
         }
     }
 
+    // Convierte el árbol sintáctico a formato JSON
     public static String convertirArbolAJSON(arbol nodo) {
         StringBuilder json = new StringBuilder();
         json.append("{\"name\":\"");
