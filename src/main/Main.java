@@ -187,7 +187,7 @@ public class Main {
             writer.write("    </style>\n");
             writer.write("</head>\n");
             writer.write("<body>\n");
-            writer.write("    <h1>🌳 Árbol Sintáctico Generado</h1>\n");
+            writer.write("    <h1> Árbol Sintáctico Generado</h1>\n");
             writer.write("    <div class=\"controls\">\n");
             writer.write("        <button onclick=\"zoomIn()\">+ Zoom In</button>\n");
             writer.write("        <button onclick=\"zoomOut()\">- Zoom Out</button>\n");
@@ -203,8 +203,8 @@ public class Main {
             writer.write(";\n\n");
             
             writer.write("        const margin = { top: 40, right: 120, bottom: 40, left: 120 };\n");
-            writer.write("        const width = 1600 - margin.left - margin.right;\n");
-            writer.write("        const height = 800 - margin.top - margin.bottom;\n\n");
+            writer.write("        const width = 2200 - margin.left - margin.right;\n");
+            writer.write("        const height = 1200 - margin.top - margin.bottom;\n\n");
             
             writer.write("        const svg = d3.select('#tree-container')\n");
             writer.write("            .append('svg')\n");
@@ -222,7 +222,9 @@ public class Main {
             writer.write("        d3.select('svg').call(zoom);\n\n");
             
             writer.write("        const root = d3.hierarchy(treeData);\n");
-            writer.write("        const treeLayout = d3.tree().size([height, width - 200]);\n");
+            writer.write("        const treeLayout = d3.tree()\n");
+            writer.write("            .nodeSize([80, 220])\n");
+            writer.write("            .separation((a, b) => a.parent === b.parent ? 1.5 : 2);\n");
             writer.write("        treeLayout(root);\n\n");
             
             writer.write("        // Enlaces\n");
@@ -245,15 +247,17 @@ public class Main {
             
             writer.write("        // Rectángulos para nodos\n");
             writer.write("        node.append('rect')\n");
-            writer.write("            .attr('width', d => Math.max(100, d.data.name.length * 8))\n");
-            writer.write("            .attr('height', 40)\n");
-            writer.write("            .attr('x', -50)\n");
-            writer.write("            .attr('y', -20);\n\n");
+            writer.write("            .attr('width', d => Math.max(120, d.data.name.length * 9))\n");
+            writer.write("            .attr('height', 45)\n");
+            writer.write("            .attr('x', d => -Math.max(120, d.data.name.length * 9) / 2)\n");
+            writer.write("            .attr('y', -22);\n\n");
+
             
-            writer.write("        // Texto de nodos\n");
             writer.write("        node.append('text')\n");
-            writer.write("            .attr('dy', '.35em')\n");
+            writer.write("            .attr('dy', '0.35em')\n");
             writer.write("            .attr('text-anchor', 'middle')\n");
+            writer.write("            .call(wrap, 110)\n");
+
             writer.write("            .text(d => {\n");
             writer.write("                let text = d.data.name;\n");
             writer.write("                if (d.data.value && d.data.value !== 'null') {\n");
@@ -286,6 +290,30 @@ public class Main {
             writer.write("            document.body.removeChild(a);\n");
             writer.write("            URL.revokeObjectURL(url);\n");
             writer.write("        }\n");
+            writer.write("        function wrap(text, width) {\n");
+            writer.write("            text.each(function () {\n");
+            writer.write("                const textSel = d3.select(this);\n");
+            writer.write("                const words = textSel.text().split(/\\s+/).reverse();\n");
+            writer.write("                let word;\n");
+            writer.write("                let line = [];\n");
+            writer.write("                let lineNumber = 0;\n");
+            writer.write("                const lineHeight = 1.1;\n");
+            writer.write("                const y = textSel.attr('y');\n");
+            writer.write("                const dy = parseFloat(textSel.attr('dy'));\n");
+            writer.write("                let tspan = textSel.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'em');\n");
+            writer.write("                while (word = words.pop()) {\n");
+            writer.write("                    line.push(word);\n");
+            writer.write("                    tspan.text(line.join(' '));\n");
+            writer.write("                    if (tspan.node().getComputedTextLength() > width) {\n");
+            writer.write("                        line.pop();\n");
+            writer.write("                        tspan.text(line.join(' '));\n");
+            writer.write("                        line = [word];\n");
+            writer.write("                        tspan = textSel.append('tspan').attr('x', 0).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'em').text(word);\n");
+            writer.write("                    }\n");
+            writer.write("                }\n");
+            writer.write("            });\n");
+            writer.write("        }\n");
+
             writer.write("    </script>\n");
             writer.write("</body>\n");
             writer.write("</html>\n");
