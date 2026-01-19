@@ -1,0 +1,15 @@
+// Archivo de prueba con errores intencionales para demostrar el modo pánico
+
+world int x endif   // Error: Falta 'endl' o tiene sintaxis incorrecta
+
+gift int suma(int a, int b) !
+    local int resultado = a + b
+    return resultado
+!
+
+coal main() !
+    local int num1 = 10
+    local int num2 = 20 mistake   // Error: Token inesperado
+    local int suma_total = num1 + num2
+    return suma_total
+!

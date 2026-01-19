@@ -1,0 +1,42 @@
+world int contador endl
+world float valor = 3.14 endl
+world char letra = 'x' endl
+
+world int error1
+
+gift int suma¿int a  int b? ¡
+    local int resultado = a + b endl
+    return resultado endl
+!
+
+gift float promedio¿float x, float y? ¡
+    local float prom = ¿x + y? / 2 endl
+    return prom endl
+
+coal navidad¿? ¡
+    local int num1 = 5 endl
+    local int num2 = 10 endl
+
+    local int suma = num1 + endl
+
+    local bool resultado = num1 > 5 % num2 endl
+
+    num1 = num1 + 1 endl
+
+    decide of
+        ¿ num1 > 10 ¿
+            num1 = 0 endl
+        !
+    end decide endl
+
+    loop
+        num2 = num2 - 1 endl
+        exit when num2 == 0 endl
+    end loop endl
+
+    for ¿ num1 = 0 num1 < 5 endl num1 = num1 + 1 ? ¡
+        num2 = num2 + 1 endl
+    !
+
+    return num1 endl
+!

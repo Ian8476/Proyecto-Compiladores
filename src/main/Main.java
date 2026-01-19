@@ -5,12 +5,16 @@ import lexer.sym;
 import java_cup.runtime.Symbol;
 import lexer.Parser;
 import arbolSintactico.arbol;
+import util.ErrorHandler;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        
+        // Limpiar errores previos
+        ErrorHandler.limpiar();
 
         //Lecutra del archivo de entrada
-        Reader reader = new FileReader("input/prueba.txt");
+        Reader reader = new FileReader("input/prueba_error.txt");
         Lexer lexer = new Lexer(reader);
 
         // Crear el directorio de salida si no existe
@@ -54,7 +58,7 @@ public class Main {
                     w.write("ACCEPTED");
                     w.newLine();
                     w.flush();
-                    // También imprimir en consola
+                    // También imprime en consola
                     System.out.println("\n=== VALIDACIÓN SINTÁCTICA ===");
                     System.out.println("ACCEPTED");
                     
@@ -83,6 +87,15 @@ public class Main {
                             System.out.println("\n=== grafico html generado ===");
                         }
                     }
+                    
+                    // Generar reporte de errores si hay
+                    if (ErrorHandler.getTotalErrores() > 0) {
+                        ErrorHandler.generarReporte("output/reporte_errores.txt");
+                        System.out.println("\n=== REPORTE DE ERRORES GENERADO ===");
+                        ErrorHandler.mostrarResumen();
+                    } else {
+                        System.out.println("\n Compilación sin errores");
+                    }
                 } catch (Exception e) {
                     // Escritura del resultado en el archivo de salida
                     w.write("REJECTED: " + e.getMessage());
@@ -90,6 +103,11 @@ public class Main {
                     w.flush();
                     // También imprimir en consola
                     System.err.println("REJECTED: " + e.getMessage());
+                    
+                    // Generar reporte de errores
+                    ErrorHandler.generarReporte("output/reporte_errores.txt");
+                    ErrorHandler.mostrarResumen();
+                    
                     e.printStackTrace(System.err);
                 }
             }

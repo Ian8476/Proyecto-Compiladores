@@ -86,6 +86,9 @@ lista_globales ::= /* empty */
                  {: arbol nodo = (lg != null) ? lg : new arbol("GLOBALES");
                     nodo.agregarHijo(dg);
                     RESULT = nodo; :}
+                 | lista_globales:lg error ENDL
+                 {: util.ErrorHandler.agregarErrorSintactico("Error en declaración global - se salta a siguiente línea");
+                    RESULT = lg; :}
                  ;
 
 /*
@@ -219,6 +222,9 @@ stmt_list ::= /* empty */
             {: arbol nodo = (sl != null) ? sl : new arbol("SENTENCIAS");
                nodo.agregarHijo(s);
                RESULT = nodo; :}
+            | stmt_list:sl error ENDL
+            {: util.ErrorHandler.agregarErrorSintactico("Error sintáctico en línea: se esperaba una sentencia válida");
+               RESULT = sl; :}
             ;
 
 /* -------- Sentencias (endl termina) -------- */

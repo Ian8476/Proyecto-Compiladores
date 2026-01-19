@@ -16,148 +16,29 @@
         },
         {
           "tipo": "DECL_GLOBAL",
-          "valor": "matriz",
+          "valor": "valor",
+          "hijos": [
+            {
+              "tipo": "TIPO",
+              "valor": "float"
+            },
+            {
+              "tipo": "LITERAL_FLOAT",
+              "valor": "3.14"
+            }
+          ]
+        },
+        {
+          "tipo": "DECL_GLOBAL",
+          "valor": "letra",
           "hijos": [
             {
               "tipo": "TIPO",
               "valor": "char"
             },
             {
-              "tipo": "ARRAY_INIT",
-              "hijos": [
-                {
-                  "tipo": "FILAS",
-                  "hijos": [
-                    {
-                      "tipo": "FILA",
-                      "hijos": [
-                        {
-                          "tipo": "ELEMENTOS",
-                          "hijos": [
-                            {
-                              "tipo": "LITERAL_CHAR",
-                              "valor": "a"
-                            },
-                            {
-                              "tipo": "LITERAL_CHAR",
-                              "valor": "b"
-                            },
-                            {
-                              "tipo": "LITERAL_CHAR",
-                              "valor": "c"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "tipo": "FILA",
-                      "hijos": [
-                        {
-                          "tipo": "ELEMENTOS",
-                          "hijos": [
-                            {
-                              "tipo": "LITERAL_CHAR",
-                              "valor": "d"
-                            },
-                            {
-                              "tipo": "LITERAL_CHAR",
-                              "valor": "e"
-                            },
-                            {
-                              "tipo": "LITERAL_CHAR",
-                              "valor": "f"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "tipo": "FUNCIONES",
-      "hijos": [
-        {
-          "tipo": "FUNCION",
-          "valor": "suma",
-          "hijos": [
-            {
-              "tipo": "TIPO",
-              "valor": "int"
-            },
-            {
-              "tipo": "PARAMETROS",
-              "hijos": [
-                {
-                  "tipo": "PARAM",
-                  "valor": "a",
-                  "hijos": [
-                    {
-                      "tipo": "TIPO",
-                      "valor": "int"
-                    }
-                  ]
-                },
-                {
-                  "tipo": "PARAM",
-                  "valor": "b",
-                  "hijos": [
-                    {
-                      "tipo": "TIPO",
-                      "valor": "int"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "tipo": "BLOQUE",
-              "hijos": [
-                {
-                  "tipo": "SENTENCIAS",
-                  "hijos": [
-                    {
-                      "tipo": "DECL_LOCAL",
-                      "valor": "resultado",
-                      "hijos": [
-                        {
-                          "tipo": "TIPO",
-                          "valor": "int"
-                        },
-                        {
-                          "tipo": "OPERACION",
-                          "valor": "+",
-                          "hijos": [
-                            {
-                              "tipo": "IDENT",
-                              "valor": "a"
-                            },
-                            {
-                              "tipo": "IDENT",
-                              "valor": "b"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "tipo": "RETURN",
-                      "hijos": [
-                        {
-                          "tipo": "IDENT",
-                          "valor": "resultado"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+              "tipo": "LITERAL_CHAR",
+              "valor": "x"
             }
           ]
         }
@@ -175,7 +56,7 @@
               "hijos": [
                 {
                   "tipo": "DECL_LOCAL",
-                  "valor": "x",
+                  "valor": "num1",
                   "hijos": [
                     {
                       "tipo": "TIPO",
@@ -189,7 +70,7 @@
                 },
                 {
                   "tipo": "DECL_LOCAL",
-                  "valor": "y",
+                  "valor": "num2",
                   "hijos": [
                     {
                       "tipo": "TIPO",
@@ -202,23 +83,32 @@
                   ]
                 },
                 {
-                  "tipo": "ASIGNACION",
-                  "valor": "x",
+                  "tipo": "DECL_LOCAL",
+                  "valor": "resultado",
                   "hijos": [
                     {
-                      "tipo": "LLAMADA",
-                      "valor": "suma",
+                      "tipo": "TIPO",
+                      "valor": "bool"
+                    },
+                    {
+                      "tipo": "OPERACION",
+                      "valor": ">",
                       "hijos": [
                         {
-                          "tipo": "ARGUMENTOS",
+                          "tipo": "IDENT",
+                          "valor": "num1"
+                        },
+                        {
+                          "tipo": "OPERACION",
+                          "valor": "%",
                           "hijos": [
                             {
-                              "tipo": "IDENT",
-                              "valor": "x"
+                              "tipo": "LITERAL_INT",
+                              "valor": "5"
                             },
                             {
                               "tipo": "IDENT",
-                              "valor": "y"
+                              "valor": "num2"
                             }
                           ]
                         }
@@ -227,133 +117,20 @@
                   ]
                 },
                 {
-                  "tipo": "DECIDE",
+                  "tipo": "ASIGNACION",
+                  "valor": "num1",
                   "hijos": [
                     {
-                      "tipo": "CASOS",
+                      "tipo": "OPERACION",
+                      "valor": "+",
                       "hijos": [
                         {
-                          "tipo": "CASO",
-                          "hijos": [
-                            {
-                              "tipo": "OPERACION",
-                              "valor": ">",
-                              "hijos": [
-                                {
-                                  "tipo": "IDENT",
-                                  "valor": "x"
-                                },
-                                {
-                                  "tipo": "LITERAL_INT",
-                                  "valor": "10"
-                                }
-                              ]
-                            },
-                            {
-                              "tipo": "BLOQUE",
-                              "hijos": [
-                                {
-                                  "tipo": "SENTENCIAS",
-                                  "hijos": [
-                                    {
-                                      "tipo": "ASIGNACION",
-                                      "valor": "x",
-                                      "hijos": [
-                                        {
-                                          "tipo": "OPERACION",
-                                          "valor": "-",
-                                          "hijos": [
-                                            {
-                                              "tipo": "IDENT",
-                                              "valor": "x"
-                                            },
-                                            {
-                                              "tipo": "LITERAL_INT",
-                                              "valor": "1"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
+                          "tipo": "IDENT",
+                          "valor": "num1"
                         },
                         {
-                          "tipo": "CASO",
-                          "hijos": [
-                            {
-                              "tipo": "OPERACION",
-                              "valor": "==",
-                              "hijos": [
-                                {
-                                  "tipo": "IDENT",
-                                  "valor": "x"
-                                },
-                                {
-                                  "tipo": "LITERAL_INT",
-                                  "valor": "10"
-                                }
-                              ]
-                            },
-                            {
-                              "tipo": "BLOQUE",
-                              "hijos": [
-                                {
-                                  "tipo": "SENTENCIAS",
-                                  "hijos": [
-                                    {
-                                      "tipo": "ASIGNACION",
-                                      "valor": "x",
-                                      "hijos": [
-                                        {
-                                          "tipo": "OPERACION",
-                                          "valor": "+",
-                                          "hijos": [
-                                            {
-                                              "tipo": "IDENT",
-                                              "valor": "x"
-                                            },
-                                            {
-                                              "tipo": "LITERAL_INT",
-                                              "valor": "1"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "tipo": "ELSE",
-                      "hijos": [
-                        {
-                          "tipo": "BLOQUE",
-                          "hijos": [
-                            {
-                              "tipo": "SENTENCIAS",
-                              "hijos": [
-                                {
-                                  "tipo": "ASIGNACION",
-                                  "valor": "x",
-                                  "hijos": [
-                                    {
-                                      "tipo": "LITERAL_INT",
-                                      "valor": "0"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
+                          "tipo": "LITERAL_INT",
+                          "valor": "1"
                         }
                       ]
                     }
@@ -367,7 +144,7 @@
                       "hijos": [
                         {
                           "tipo": "ASIGNACION",
-                          "valor": "x",
+                          "valor": "num2",
                           "hijos": [
                             {
                               "tipo": "OPERACION",
@@ -375,7 +152,7 @@
                               "hijos": [
                                 {
                                   "tipo": "IDENT",
-                                  "valor": "x"
+                                  "valor": "num2"
                                 },
                                 {
                                   "tipo": "LITERAL_INT",
@@ -396,7 +173,7 @@
                           "hijos": [
                             {
                               "tipo": "IDENT",
-                              "valor": "x"
+                              "valor": "num2"
                             },
                             {
                               "tipo": "LITERAL_INT",
@@ -405,97 +182,6 @@
                           ]
                         }
                       ]
-                    }
-                  ]
-                },
-                {
-                  "tipo": "FOR",
-                  "hijos": [
-                    {
-                      "tipo": "ASIGNACION",
-                      "valor": "x",
-                      "hijos": [
-                        {
-                          "tipo": "LITERAL_INT",
-                          "valor": "0"
-                        }
-                      ]
-                    },
-                    {
-                      "tipo": "OPERACION",
-                      "valor": "<",
-                      "hijos": [
-                        {
-                          "tipo": "IDENT",
-                          "valor": "x"
-                        },
-                        {
-                          "tipo": "LITERAL_INT",
-                          "valor": "3"
-                        }
-                      ]
-                    },
-                    {
-                      "tipo": "ASIGNACION",
-                      "valor": "x",
-                      "hijos": [
-                        {
-                          "tipo": "OPERACION",
-                          "valor": "+",
-                          "hijos": [
-                            {
-                              "tipo": "IDENT",
-                              "valor": "x"
-                            },
-                            {
-                              "tipo": "LITERAL_INT",
-                              "valor": "1"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "tipo": "BLOQUE",
-                      "hijos": [
-                        {
-                          "tipo": "SENTENCIAS",
-                          "hijos": [
-                            {
-                              "tipo": "ASIGNACION_ARRAY",
-                              "hijos": [
-                                {
-                                  "tipo": "ARRAY_ACCESS",
-                                  "valor": "matriz",
-                                  "hijos": [
-                                    {
-                                      "tipo": "IDENT",
-                                      "valor": "x"
-                                    },
-                                    {
-                                      "tipo": "LITERAL_INT",
-                                      "valor": "0"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "tipo": "LITERAL_CHAR",
-                                  "valor": "z"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "tipo": "RETURN",
-                  "hijos": [
-                    {
-                      "tipo": "IDENT",
-                      "valor": "x"
                     }
                   ]
                 }
