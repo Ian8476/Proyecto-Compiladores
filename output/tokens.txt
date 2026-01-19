@@ -170,39 +170,104 @@ PROGRAM
   GLOBALES
     DECL_GLOBAL [contador]
       TIPO [int]
-    DECL_GLOBAL [valor]
-      TIPO [float]
-      LITERAL_FLOAT [3.14]
-    DECL_GLOBAL [letra]
+    DECL_GLOBAL [matriz]
       TIPO [char]
-      LITERAL_CHAR [x]
+      ARRAY_INIT
+        FILAS
+          FILA
+            ELEMENTOS
+              LITERAL_CHAR [a]
+              LITERAL_CHAR [b]
+              LITERAL_CHAR [c]
+          FILA
+            ELEMENTOS
+              LITERAL_CHAR [d]
+              LITERAL_CHAR [e]
+              LITERAL_CHAR [f]
+  FUNCIONES
+    FUNCION [suma]
+      TIPO [int]
+      PARAMETROS
+        PARAM [a]
+          TIPO [int]
+        PARAM [b]
+          TIPO [int]
+      BLOQUE
+        SENTENCIAS
+          DECL_LOCAL [resultado]
+            TIPO [int]
+            OPERACION [+]
+              IDENT [a]
+              IDENT [b]
+          RETURN
+            IDENT [resultado]
   MAIN [navidad]
     BLOQUE
       SENTENCIAS
-        DECL_LOCAL [num1]
+        DECL_LOCAL [x]
           TIPO [int]
           LITERAL_INT [5]
-        DECL_LOCAL [num2]
+        DECL_LOCAL [y]
           TIPO [int]
           LITERAL_INT [10]
-        DECL_LOCAL [resultado]
-          TIPO [bool]
-          OPERACION [>]
-            IDENT [num1]
-            OPERACION [%]
-              LITERAL_INT [5]
-              IDENT [num2]
-        ASIGNACION [num1]
-          OPERACION [+]
-            IDENT [num1]
-            LITERAL_INT [1]
+        ASIGNACION [x]
+          LLAMADA [suma]
+            ARGUMENTOS
+              IDENT [x]
+              IDENT [y]
+        DECIDE
+          CASOS
+            CASO
+              OPERACION [>]
+                IDENT [x]
+                LITERAL_INT [10]
+              BLOQUE
+                SENTENCIAS
+                  ASIGNACION [x]
+                    OPERACION [-]
+                      IDENT [x]
+                      LITERAL_INT [1]
+            CASO
+              OPERACION [==]
+                IDENT [x]
+                LITERAL_INT [10]
+              BLOQUE
+                SENTENCIAS
+                  ASIGNACION [x]
+                    OPERACION [+]
+                      IDENT [x]
+                      LITERAL_INT [1]
+          ELSE
+            BLOQUE
+              SENTENCIAS
+                ASIGNACION [x]
+                  LITERAL_INT [0]
         LOOP
           SENTENCIAS
-            ASIGNACION [num2]
+            ASIGNACION [x]
               OPERACION [-]
-                IDENT [num2]
+                IDENT [x]
                 LITERAL_INT [1]
           EXIT
             OPERACION [==]
-              IDENT [num2]
+              IDENT [x]
               LITERAL_INT [0]
+        FOR
+          ASIGNACION [x]
+            LITERAL_INT [0]
+          OPERACION [<]
+            IDENT [x]
+            LITERAL_INT [3]
+          ASIGNACION [x]
+            OPERACION [+]
+              IDENT [x]
+              LITERAL_INT [1]
+          BLOQUE
+            SENTENCIAS
+              ASIGNACION_ARRAY
+                ARRAY_ACCESS [matriz]
+                  IDENT [x]
+                  LITERAL_INT [0]
+                LITERAL_CHAR [z]
+        RETURN
+          IDENT [x]
