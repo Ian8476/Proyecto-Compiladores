@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-    <h1>🌳 Árbol Sintáctico Generado</h1>
+    <h1> Árbol Sintáctico Generado</h1>
     <div class="controls">
         <button onclick="zoomIn()">+ Zoom In</button>
         <button onclick="zoomOut()">- Zoom Out</button>
@@ -30,8 +30,8 @@
         const treeData = {"name":"PROGRAM", "value":"", "children": [{"name":"GLOBALES", "value":"", "children": [{"name":"DECL_GLOBAL", "value":"contador", "children": [{"name":"TIPO", "value":"int"}]}, {"name":"DECL_GLOBAL", "value":"matriz", "children": [{"name":"TIPO", "value":"char"}, {"name":"ARRAY_INIT", "value":"", "children": [{"name":"FILAS", "value":"", "children": [{"name":"FILA", "value":"", "children": [{"name":"ELEMENTOS", "value":"", "children": [{"name":"LITERAL_CHAR", "value":"a"}, {"name":"LITERAL_CHAR", "value":"b"}, {"name":"LITERAL_CHAR", "value":"c"}]}]}, {"name":"FILA", "value":"", "children": [{"name":"ELEMENTOS", "value":"", "children": [{"name":"LITERAL_CHAR", "value":"d"}, {"name":"LITERAL_CHAR", "value":"e"}, {"name":"LITERAL_CHAR", "value":"f"}]}]}]}]}]}]}, {"name":"FUNCIONES", "value":"", "children": [{"name":"FUNCION", "value":"suma", "children": [{"name":"TIPO", "value":"int"}, {"name":"PARAMETROS", "value":"", "children": [{"name":"PARAM", "value":"a", "children": [{"name":"TIPO", "value":"int"}]}, {"name":"PARAM", "value":"b", "children": [{"name":"TIPO", "value":"int"}]}]}, {"name":"BLOQUE", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"DECL_LOCAL", "value":"resultado", "children": [{"name":"TIPO", "value":"int"}, {"name":"OPERACION", "value":"+", "children": [{"name":"IDENT", "value":"a"}, {"name":"IDENT", "value":"b"}]}]}, {"name":"RETURN", "value":"", "children": [{"name":"IDENT", "value":"resultado"}]}]}]}]}]}, {"name":"MAIN", "value":"navidad", "children": [{"name":"BLOQUE", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"DECL_LOCAL", "value":"x", "children": [{"name":"TIPO", "value":"int"}, {"name":"LITERAL_INT", "value":"5"}]}, {"name":"DECL_LOCAL", "value":"y", "children": [{"name":"TIPO", "value":"int"}, {"name":"LITERAL_INT", "value":"10"}]}, {"name":"ASIGNACION", "value":"x", "children": [{"name":"LLAMADA", "value":"suma", "children": [{"name":"ARGUMENTOS", "value":"", "children": [{"name":"IDENT", "value":"x"}, {"name":"IDENT", "value":"y"}]}]}]}, {"name":"DECIDE", "value":"", "children": [{"name":"CASOS", "value":"", "children": [{"name":"CASO", "value":"", "children": [{"name":"OPERACION", "value":">", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"10"}]}, {"name":"BLOQUE", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"ASIGNACION", "value":"x", "children": [{"name":"OPERACION", "value":"-", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"1"}]}]}]}]}]}, {"name":"CASO", "value":"", "children": [{"name":"OPERACION", "value":"==", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"10"}]}, {"name":"BLOQUE", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"ASIGNACION", "value":"x", "children": [{"name":"OPERACION", "value":"+", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"1"}]}]}]}]}]}]}, {"name":"ELSE", "value":"", "children": [{"name":"BLOQUE", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"ASIGNACION", "value":"x", "children": [{"name":"LITERAL_INT", "value":"0"}]}]}]}]}]}, {"name":"LOOP", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"ASIGNACION", "value":"x", "children": [{"name":"OPERACION", "value":"-", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"1"}]}]}]}, {"name":"EXIT", "value":"", "children": [{"name":"OPERACION", "value":"==", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"0"}]}]}]}, {"name":"FOR", "value":"", "children": [{"name":"ASIGNACION", "value":"x", "children": [{"name":"LITERAL_INT", "value":"0"}]}, {"name":"OPERACION", "value":"<", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"3"}]}, {"name":"ASIGNACION", "value":"x", "children": [{"name":"OPERACION", "value":"+", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"1"}]}]}, {"name":"BLOQUE", "value":"", "children": [{"name":"SENTENCIAS", "value":"", "children": [{"name":"ASIGNACION_ARRAY", "value":"", "children": [{"name":"ARRAY_ACCESS", "value":"matriz", "children": [{"name":"IDENT", "value":"x"}, {"name":"LITERAL_INT", "value":"0"}]}, {"name":"LITERAL_CHAR", "value":"z"}]}]}]}]}, {"name":"RETURN", "value":"", "children": [{"name":"IDENT", "value":"x"}]}]}]}]}]};
 
         const margin = { top: 40, right: 120, bottom: 40, left: 120 };
-        const width = 1600 - margin.left - margin.right;
-        const height = 800 - margin.top - margin.bottom;
+        const width = 2200 - margin.left - margin.right;
+        const height = 1200 - margin.top - margin.bottom;
 
         const svg = d3.select('#tree-container')
             .append('svg')
@@ -49,7 +49,9 @@
         d3.select('svg').call(zoom);
 
         const root = d3.hierarchy(treeData);
-        const treeLayout = d3.tree().size([height, width - 200]);
+        const treeLayout = d3.tree()
+            .nodeSize([80, 220])
+            .separation((a, b) => a.parent === b.parent ? 1.5 : 2);
         treeLayout(root);
 
         // Enlaces
@@ -72,15 +74,15 @@
 
         // Rectángulos para nodos
         node.append('rect')
-            .attr('width', d => Math.max(100, d.data.name.length * 8))
-            .attr('height', 40)
-            .attr('x', -50)
-            .attr('y', -20);
+            .attr('width', d => Math.max(120, d.data.name.length * 9))
+            .attr('height', 45)
+            .attr('x', d => -Math.max(120, d.data.name.length * 9) / 2)
+            .attr('y', -22);
 
-        // Texto de nodos
         node.append('text')
-            .attr('dy', '.35em')
+            .attr('dy', '0.35em')
             .attr('text-anchor', 'middle')
+            .call(wrap, 110)
             .text(d => {
                 let text = d.data.name;
                 if (d.data.value && d.data.value !== 'null') {
@@ -112,6 +114,29 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+        function wrap(text, width) {
+            text.each(function () {
+                const textSel = d3.select(this);
+                const words = textSel.text().split(/\s+/).reverse();
+                let word;
+                let line = [];
+                let lineNumber = 0;
+                const lineHeight = 1.1;
+                const y = textSel.attr('y');
+                const dy = parseFloat(textSel.attr('dy'));
+                let tspan = textSel.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'em');
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(' '));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(' '));
+                        line = [word];
+                        tspan = textSel.append('tspan').attr('x', 0).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'em').text(word);
+                    }
+                }
+            });
         }
     </script>
 </body>
