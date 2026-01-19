@@ -78,6 +78,9 @@ public class Main {
                             wJson.write(jsonFormateado);
                             wJson.flush();
                             System.out.println("\n=== JSON guardado en output/arbol.json ===");
+                            // Después de guardar el árbol como JSON
+                            generarHTMLArbol(ast, "output/arbol_interactivo.html");
+                            System.out.println("\n=== grafico html generado ===");
                         }
                     }
                 } catch (Exception e) {
@@ -154,4 +157,170 @@ public class Main {
             sb.append("  ");
         }
     }
+    
+// *******************************************
+/**
+ *  metodo para la generación grafica del árbol sintáctico, mediante html
+ * @param raiz El árbol sintáctico a graficar
+ * @param archivoSalida Ruta del archivo HTML de salida
+ * 
+ */
+    public static void generarHTMLArbol(arbol raiz, String archivoSalida) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivoSalida))) {
+            writer.write("<!DOCTYPE html>\n");
+            writer.write("<html>\n");
+            writer.write("<head>\n");
+            writer.write("    <title>Árbol Sintáctico - Compilador</title>\n");
+            writer.write("    <script src=\"https://d3js.org/d3.v7.min.js\"></script>\n");
+            writer.write("    <style>\n");
+            writer.write("        body { font-family: Arial, sans-serif; margin: 20px; }\n");
+            writer.write("        .node circle { fill: #6baed6; stroke: #3182bd; stroke-width: 1.5px; }\n");
+            writer.write("        .node text { font-size: 12px; font-weight: bold; }\n");
+            writer.write("        .link { fill: none; stroke: #ccc; stroke-width: 1.5px; }\n");
+            writer.write("        .node rect { fill: #4CAF50; stroke: #388E3C; stroke-width: 2px; rx: 5; ry: 5; }\n");
+            writer.write("        .node text { fill: white; font-weight: bold; }\n");
+            writer.write("        .node.leaf rect { fill: #2196F3; }\n");
+            writer.write("        .node.root rect { fill: #FF9800; }\n");
+            writer.write("        .controls { margin: 20px 0; }\n");
+            writer.write("        button { padding: 10px 15px; margin: 5px; background: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 4px; }\n");
+            writer.write("        button:hover { background: #45a049; }\n");
+            writer.write("    </style>\n");
+            writer.write("</head>\n");
+            writer.write("<body>\n");
+            writer.write("    <h1>🌳 Árbol Sintáctico Generado</h1>\n");
+            writer.write("    <div class=\"controls\">\n");
+            writer.write("        <button onclick=\"zoomIn()\">+ Zoom In</button>\n");
+            writer.write("        <button onclick=\"zoomOut()\">- Zoom Out</button>\n");
+            writer.write("        <button onclick=\"resetZoom()\"> Reset</button>\n");
+            writer.write("        <button onclick=\"downloadSVG()\">Descarga del grafico</button>\n");
+            writer.write("    </div>\n");
+            writer.write("    <div id=\"tree-container\"></div>\n");
+            writer.write("    <script>\n");
+            
+            // Generar los datos del árbol en formato JSON
+            writer.write("        const treeData = ");
+            writer.write(convertirArbolAJSON(raiz));
+            writer.write(";\n\n");
+            
+            writer.write("        const margin = { top: 40, right: 120, bottom: 40, left: 120 };\n");
+            writer.write("        const width = 1600 - margin.left - margin.right;\n");
+            writer.write("        const height = 800 - margin.top - margin.bottom;\n\n");
+            
+            writer.write("        const svg = d3.select('#tree-container')\n");
+            writer.write("            .append('svg')\n");
+            writer.write("            .attr('width', width + margin.left + margin.right)\n");
+            writer.write("            .attr('height', height + margin.top + margin.bottom)\n");
+            writer.write("            .append('g')\n");
+            writer.write("            .attr('transform', `translate(${margin.left},${margin.top})`);\n\n");
+            
+            writer.write("        let zoom = d3.zoom()\n");
+            writer.write("            .scaleExtent([0.1, 3])\n");
+            writer.write("            .on('zoom', (event) => {\n");
+            writer.write("                svg.attr('transform', event.transform);\n");
+            writer.write("            });\n\n");
+            
+            writer.write("        d3.select('svg').call(zoom);\n\n");
+            
+            writer.write("        const root = d3.hierarchy(treeData);\n");
+            writer.write("        const treeLayout = d3.tree().size([height, width - 200]);\n");
+            writer.write("        treeLayout(root);\n\n");
+            
+            writer.write("        // Enlaces\n");
+            writer.write("        svg.selectAll('.link')\n");
+            writer.write("            .data(root.links())\n");
+            writer.write("            .enter()\n");
+            writer.write("            .append('path')\n");
+            writer.write("            .attr('class', 'link')\n");
+            writer.write("            .attr('d', d3.linkHorizontal()\n");
+            writer.write("                .x(d => d.y)\n");
+            writer.write("                .y(d => d.x));\n\n");
+            
+            writer.write("        // Nodos\n");
+            writer.write("        const node = svg.selectAll('.node')\n");
+            writer.write("            .data(root.descendants())\n");
+            writer.write("            .enter()\n");
+            writer.write("            .append('g')\n");
+            writer.write("            .attr('class', d => 'node ' + (d.children ? 'internal' : 'leaf') + (d.depth === 0 ? ' root' : ''))\n");
+            writer.write("            .attr('transform', d => `translate(${d.y},${d.x})`);\n\n");
+            
+            writer.write("        // Rectángulos para nodos\n");
+            writer.write("        node.append('rect')\n");
+            writer.write("            .attr('width', d => Math.max(100, d.data.name.length * 8))\n");
+            writer.write("            .attr('height', 40)\n");
+            writer.write("            .attr('x', -50)\n");
+            writer.write("            .attr('y', -20);\n\n");
+            
+            writer.write("        // Texto de nodos\n");
+            writer.write("        node.append('text')\n");
+            writer.write("            .attr('dy', '.35em')\n");
+            writer.write("            .attr('text-anchor', 'middle')\n");
+            writer.write("            .text(d => {\n");
+            writer.write("                let text = d.data.name;\n");
+            writer.write("                if (d.data.value && d.data.value !== 'null') {\n");
+            writer.write("                    text += '\\n' + d.data.value;\n");
+            writer.write("                }\n");
+            writer.write("                return text;\n");
+            writer.write("            })\n");
+            writer.write("            .attr('font-size', '11px')\n");
+            writer.write("            .attr('fill', 'white');\n\n");
+            
+            writer.write("        // Funciones de control\n");
+            writer.write("        function zoomIn() {\n");
+            writer.write("            d3.select('svg').transition().duration(300).call(zoom.scaleBy, 1.3);\n");
+            writer.write("        }\n");
+            writer.write("        function zoomOut() {\n");
+            writer.write("            d3.select('svg').transition().duration(300).call(zoom.scaleBy, 0.7);\n");
+            writer.write("        }\n");
+            writer.write("        function resetZoom() {\n");
+            writer.write("            d3.select('svg').transition().duration(300).call(zoom.transform, d3.zoomIdentity);\n");
+            writer.write("        }\n");
+            writer.write("        function downloadSVG() {\n");
+            writer.write("            const svgData = new XMLSerializer().serializeToString(document.querySelector('svg'));\n");
+            writer.write("            const blob = new Blob([svgData], {type: 'image/svg+xml'});\n");
+            writer.write("            const url = URL.createObjectURL(blob);\n");
+            writer.write("            const a = document.createElement('a');\n");
+            writer.write("            a.href = url;\n");
+            writer.write("            a.download = 'arbol_sintactico.svg';\n");
+            writer.write("            document.body.appendChild(a);\n");
+            writer.write("            a.click();\n");
+            writer.write("            document.body.removeChild(a);\n");
+            writer.write("            URL.revokeObjectURL(url);\n");
+            writer.write("        }\n");
+            writer.write("    </script>\n");
+            writer.write("</body>\n");
+            writer.write("</html>\n");
+            
+            System.out.println("grafico generado: " + archivoSalida);
+            
+            
+        } catch (IOException e) {
+            System.err.println("Error al generar HTML: " + e.getMessage());
+        }
+    }
+
+    public static String convertirArbolAJSON(arbol nodo) {
+        StringBuilder json = new StringBuilder();
+        json.append("{\"name\":\"");
+        // campo "tipo" como nombre del nodo
+        json.append(nodo.tipo.replace("\"", "\\\""));
+        json.append("\", \"value\":\"");
+        // campo "valor" si no es null
+        json.append(nodo.valor != null ? nodo.valor.replace("\"", "\\\"") : "");
+        json.append("\"");
+        
+        if (!nodo.hijos.isEmpty()) {
+            json.append(", \"children\": [");
+            for (int i = 0; i < nodo.hijos.size(); i++) {
+                if (i > 0) json.append(", ");
+                json.append(convertirArbolAJSON(nodo.hijos.get(i)));
+            }
+            json.append("]");
+        }
+        json.append("}");
+        return json.toString();
+    }
+
+
+
+
 }
