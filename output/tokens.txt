@@ -1,69 +1,145 @@
-WORLD (4), , 10, 1
-T_INT (7), , 10, 7
-IDENT (13), count, 10, 11
-IGUAL (19), , 10, 17
-INT_LIT (14), 10, 10, 19
-ENDL (6), , 10, 22
-WORLD (4), , 11, 1
-T_STRING (11), , 11, 7
-IDENT (13), greeting, 11, 14
-IGUAL (19), , 11, 23
-STRING_LIT (18), hola mundo, 11, 25
-ENDL (6), , 11, 38
-GIFT (3), , 20, 1
-T_BOOL (9), , 20, 6
-IDENT (13), _miOtraFun_, 20, 11
-PARENTizq (39), , 20, 24
-PARENder (40), , 20, 27
-BLOQAB (44), , 20, 31
-RETURN (54), , 21, 2
-RESTA (21), , 21, 9
-FLOAT_LIT (15), 5.6, 21, 10
-ENDL (6), , 21, 14
-BLOQCR (45), , 22, 3
-T_COAL (12), , 24, 1
-MAIN (2), , 24, 6
-PARENTizq (39), , 24, 14
-PARENder (40), , 24, 16
-BLOQAB (44), , 24, 18
-LOCAL (5), , 25, 3
-T_INT (7), , 25, 9
-IDENT (13), x, 25, 13
-IGUAL (19), , 25, 15
-INT_LIT (14), 42, 25, 17
-ENDL (6), , 25, 20
-LOCAL (5), , 26, 3
-T_STRING (11), , 26, 9
-IDENT (13), msg, 26, 16
-IGUAL (19), , 26, 20
-STRING_LIT (18), comentarios ok, 26, 22
-ENDL (6), , 26, 39
-BLOQCR (45), , 27, 1
+WORLD (4), , 3, 1
+T_INT (7), , 3, 7
+IDENT (13), resultado, 3, 11
+IGUAL (19), , 3, 21
+INT_LIT (14), 0, 3, 23
+ENDL (6), , 3, 25
+WORLD (4), , 4, 1
+T_INT (7), , 4, 7
+IDENT (13), limite, 4, 11
+IGUAL (19), , 4, 18
+INT_LIT (14), 5, 4, 20
+ENDL (6), , 4, 22
+T_COAL (12), , 6, 1
+MAIN (2), , 6, 6
+PARENTizq (39), , 6, 14
+PARENder (40), , 6, 16
+BLOQAB (44), , 6, 18
+LOCAL (5), , 7, 3
+T_INT (7), , 7, 9
+IDENT (13), i, 7, 13
+IGUAL (19), , 7, 15
+INT_LIT (14), 0, 7, 17
+ENDL (6), , 7, 19
+FOR (53), , 10, 3
+PARENTizq (39), , 10, 7
+IDENT (13), i, 10, 9
+IGUAL (19), , 10, 11
+INT_LIT (14), 0, 10, 13
+ENDL (6), , 10, 15
+IDENT (13), i, 10, 20
+LT (29), , 10, 22
+INT_LIT (14), 10, 10, 24
+ENDL (6), , 10, 27
+IDENT (13), i, 10, 32
+INC (27), , 10, 33
+PARENder (40), , 10, 36
+BLOQAB (44), , 10, 38
+IDENT (13), resultado, 11, 5
+IGUAL (19), , 11, 15
+IDENT (13), resultado, 11, 17
+SUMA (20), , 11, 27
+INT_LIT (14), 1, 11, 29
+ENDL (6), , 11, 31
+BLOQCR (45), , 12, 3
+DECIDE (46), , 15, 3
+OF (47), , 15, 10
+PARENTizq (39), , 16, 5
+IDENT (13), resultado, 16, 7
+EQ (33), , 16, 17
+INT_LIT (14), 10, 16, 20
+PARENder (40), , 16, 23
+ARROW (38), , 16, 25
+BLOQAB (44), , 16, 28
+LOCAL (5), , 17, 7
+T_INT (7), , 17, 13
+IDENT (13), exito, 17, 17
+IGUAL (19), , 17, 23
+INT_LIT (14), 1, 17, 25
+ENDL (6), , 17, 27
+BLOQCR (45), , 18, 5
+PARENTizq (39), , 19, 5
+IDENT (13), resultado, 19, 7
+LT (29), , 19, 17
+INT_LIT (14), 5, 19, 19
+PARENder (40), , 19, 21
+ARROW (38), , 19, 23
+BLOQAB (44), , 19, 26
+LOCAL (5), , 20, 7
+T_INT (7), , 20, 13
+IDENT (13), incompleto, 20, 17
+IGUAL (19), , 20, 28
+INT_LIT (14), 1, 20, 30
+ENDL (6), , 20, 32
+BLOQCR (45), , 21, 5
+ELSE (48), , 22, 5
+ARROW (38), , 22, 10
+BLOQAB (44), , 22, 13
+LOCAL (5), , 23, 7
+T_INT (7), , 23, 13
+IDENT (13), otros, 23, 17
+IGUAL (19), , 23, 23
+INT_LIT (14), 0, 23, 25
+ENDL (6), , 23, 27
+BLOQCR (45), , 24, 5
+END (49), , 25, 3
+DECIDE (46), , 25, 7
+ENDL (6), , 25, 14
+BLOQCR (45), , 26, 1
 ACCEPTED
 
 ÁRBOL SINTÁCTICO:
 PROGRAM
   GLOBALES
-    DECL_GLOBAL [count]
+    DECL_GLOBAL [resultado]
       TIPO [int]
-      LITERAL_INT [10]
-    DECL_GLOBAL [greeting]
-      TIPO [string]
-      LITERAL_STRING [hola mundo]
-  FUNCIONES
-    FUNCION [_miOtraFun_]
-      TIPO [bool]
-      BLOQUE
-        SENTENCIAS
-          RETURN
-            OPERACION [-unario]
-              LITERAL_FLOAT [5.6]
+      LITERAL_INT [0]
+    DECL_GLOBAL [limite]
+      TIPO [int]
+      LITERAL_INT [5]
   MAIN [navidad]
     BLOQUE
       SENTENCIAS
-        DECL_LOCAL [x]
+        DECL_LOCAL [i]
           TIPO [int]
-          LITERAL_INT [42]
-        DECL_LOCAL [msg]
-          TIPO [string]
-          LITERAL_STRING [comentarios ok]
+          LITERAL_INT [0]
+        FOR
+          ASIGNACION [i]
+            LITERAL_INT [0]
+          OPERACION [<]
+            IDENT [i]
+            LITERAL_INT [10]
+          OPERACION [++]
+            IDENT [i]
+          BLOQUE
+            SENTENCIAS
+              ASIGNACION [resultado]
+                OPERACION [+]
+                  IDENT [resultado]
+                  LITERAL_INT [1]
+        DECIDE
+          CASOS
+            CASO
+              OPERACION [==]
+                IDENT [resultado]
+                LITERAL_INT [10]
+              BLOQUE
+                SENTENCIAS
+                  DECL_LOCAL [exito]
+                    TIPO [int]
+                    LITERAL_INT [1]
+            CASO
+              OPERACION [<]
+                IDENT [resultado]
+                LITERAL_INT [5]
+              BLOQUE
+                SENTENCIAS
+                  DECL_LOCAL [incompleto]
+                    TIPO [int]
+                    LITERAL_INT [1]
+          ELSE
+            BLOQUE
+              SENTENCIAS
+                DECL_LOCAL [otros]
+                  TIPO [int]
+                  LITERAL_INT [0]

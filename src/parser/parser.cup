@@ -245,11 +245,11 @@ stmt ::= decl_local:dl ENDL
        {: RESULT = ds; :}
        | loop_stmt:ls
        {: RESULT = ls; :}
-       | FOR PARENTizq asignacion:a1 ENDL expr:e ENDL asignacion:a2 PARENder bloque_bloq:bb
+       | FOR PARENTizq asignacion:a1 ENDL expr:e ENDL expr:e2 PARENder bloque_bloq:bb
        {: arbol nodo = new arbol("FOR");
           nodo.agregarHijo(a1);
           nodo.agregarHijo(e);
-          nodo.agregarHijo(a2);
+          nodo.agregarHijo(e2);
           nodo.agregarHijo(bb);
           RESULT = nodo; :}
        ;
@@ -372,25 +372,25 @@ expr_eq ::= expr_eq:ee EQ expr_rel:er
           {: RESULT = er; :}
           ;
 
-expr_rel ::= expr_rel:er LT expr_suma:es
+expr_rel ::= expr_suma:es1 LT expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", "<");
-              nodo.agregarHijo(er);
-              nodo.agregarHijo(es);
+              nodo.agregarHijo(es1);
+              nodo.agregarHijo(es2);
               RESULT = nodo; :}
-           | expr_rel:er LE expr_suma:es
+           | expr_suma:es1 LE expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", "<=");
-              nodo.agregarHijo(er);
-              nodo.agregarHijo(es);
+              nodo.agregarHijo(es1);
+              nodo.agregarHijo(es2);
               RESULT = nodo; :}
-           | expr_rel:er GT expr_suma:es
+           | expr_suma:es1 GT expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", ">");
-              nodo.agregarHijo(er);
-              nodo.agregarHijo(es);
+              nodo.agregarHijo(es1);
+              nodo.agregarHijo(es2);
               RESULT = nodo; :}
-           | expr_rel:er GE expr_suma:es
+           | expr_suma:es1 GE expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", ">=");
-              nodo.agregarHijo(er);
-              nodo.agregarHijo(es);
+              nodo.agregarHijo(es1);
+              nodo.agregarHijo(es2);
               RESULT = nodo; :}
            | expr_suma:es
            {: RESULT = es; :}
@@ -444,15 +444,15 @@ expr_pot ::= expr_un:eu POTENCIA expr_pot:ep
            ;
 
 expr_un ::= RESTA expr_un:eu
-          {: arbol nodo = new arbol("OPERACION", "-unario");
+          {: arbol nodo = new arbol("OPERACION", "-");
              nodo.agregarHijo(eu);
              RESULT = nodo; :}
           | INC expr_un:eu
-          {: arbol nodo = new arbol("OPERACION", "++pre");
+          {: arbol nodo = new arbol("OPERACION", "++");
              nodo.agregarHijo(eu);
              RESULT = nodo; :}
           | DEC expr_un:eu
-          {: arbol nodo = new arbol("OPERACION", "--pre");
+          {: arbol nodo = new arbol("OPERACION", "--");
              nodo.agregarHijo(eu);
              RESULT = nodo; :}
           | NOT expr_un:eu
@@ -461,6 +461,14 @@ expr_un ::= RESTA expr_un:eu
              RESULT = nodo; :}
           | prim:p
           {: RESULT = p; :}
+          | prim:p INC
+          {: arbol nodo = new arbol("OPERACION", "++");
+             nodo.agregarHijo(p);
+             RESULT = nodo; :}
+          | prim:p DEC
+          {: arbol nodo = new arbol("OPERACION", "--");
+             nodo.agregarHijo(p);
+             RESULT = nodo; :}
           ;
 
 prim ::= INT_LIT:n

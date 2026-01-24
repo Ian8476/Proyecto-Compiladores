@@ -1,27 +1,26 @@
-| comentario de línea inicial
+| Prueba: comparaciones binarias y ciclo for con i++
 
-є
-Comentario multilínea de prueba.
-Incluye saltos de línea, símbolos ++ -- -> = <= >= y barras |.
-También muestra comillas \" y texto que parece código.
-Fin del primer comentario multilínea.
-э
-
-world int count = 10 endl
-world string greeting = "hola mundo" endl
-
-є
-Segunda multilínea de prueba.
-Contiene líneas vacías y caracteres especiales.
-
-Termina aquí.
-э
-
-gift bool _miOtraFun_  ¿  ?   ¡ 
-	return -5.6 endl  
-  ! 
+world int resultado = 0 endl
+world int limite = 5 endl
 
 coal navidad ¿ ? ¡
-  local int x = 42 endl
-  local string msg = "comentarios ok" endl
+  local int i = 0 endl
+  
+  | Ciclo for: inicialización, condición binaria, incremento
+  for ¿ i = 0 endl i < 10 endl i++ ? ¡
+    resultado = resultado + 1 endl
+  !
+  
+  | Decisión con comparación binaria
+  decide of
+    ¿ resultado == 10 ? -> ¡
+      local int exito = 1 endl
+    !
+    ¿ resultado < 5 ? -> ¡
+      local int incompleto = 1 endl
+    !
+    else -> ¡
+      local int otros = 0 endl
+    !
+  end decide endl
 !

@@ -1,7 +1,7 @@
 === REPORTE DE ERRORES ===
 Total errores léxicos: 0
-Total errores sintácticos: 0
-Total errores: 0
+Total errores sintácticos: 1
+Total errores: 1
 
 === LISTA DETALLADA ===
-No se encontraron errores.
+ERROR SINTÁCTICO: Error sintáctico en línea: se esperaba una sentencia válida
