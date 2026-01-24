@@ -31,9 +31,9 @@ ESPACIO = [ \t\f\r\n]+
 
 /* comentario multi: є .... э */
 "є"                       { yybegin(COMENTARIO_MULTI); }
+<COMENTARIO_MULTI>[^э]+   { /* consumir hasta cierre (varios chars) */ }
 <COMENTARIO_MULTI>"э"     { yybegin(YYINITIAL); }
-<COMENTARIO_MULTI>[\s\S]  { /* consumir todo */ }
-
+<COMENTARIO_MULTI>[\s\S]  { /* consumir un caracter restante (incluye salto de línea) */ }
 /* =========================
    PALABRAS RESERVADAS / CONTROL
    ========================= */

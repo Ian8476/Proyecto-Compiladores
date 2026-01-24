@@ -1,273 +1,69 @@
-WORLD (4), , 1, 1
-T_INT (7), , 1, 7
-IDENT (13), contador, 1, 11
-ENDL (6), , 1, 20
-WORLD (4), , 2, 1
-T_FLOAT (8), , 2, 7
-IDENT (13), valor, 2, 13
-IGUAL (19), , 2, 19
-FLOAT_LIT (15), 3.14, 2, 21
-ENDL (6), , 2, 26
-WORLD (4), , 3, 1
-T_CHAR (10), , 3, 7
-IDENT (13), letra, 3, 12
-IGUAL (19), , 3, 18
-CHAR_LIT (17), x, 3, 20
-ENDL (6), , 3, 24
-WORLD (4), , 5, 1
-T_INT (7), , 5, 7
-IDENT (13), error1, 5, 11
-GIFT (3), , 7, 1
-T_INT (7), , 7, 6
-IDENT (13), suma, 7, 10
-PARENTizq (39), , 7, 14
-T_INT (7), , 7, 15
-IDENT (13), a, 7, 19
-T_INT (7), , 7, 22
-IDENT (13), b, 7, 26
-PARENder (40), , 7, 27
-BLOQAB (44), , 7, 29
-LOCAL (5), , 8, 5
-T_INT (7), , 8, 11
-IDENT (13), resultado, 8, 15
-IGUAL (19), , 8, 25
-IDENT (13), a, 8, 27
-SUMA (20), , 8, 29
-IDENT (13), b, 8, 31
-ENDL (6), , 8, 33
-RETURN (54), , 9, 5
-IDENT (13), resultado, 9, 12
-ENDL (6), , 9, 22
-BLOQCR (45), , 10, 1
-GIFT (3), , 12, 1
-T_FLOAT (8), , 12, 6
-IDENT (13), promedio, 12, 12
-PARENTizq (39), , 12, 20
-T_FLOAT (8), , 12, 21
-IDENT (13), x, 12, 27
-COMA (43), , 12, 28
-T_FLOAT (8), , 12, 30
-IDENT (13), y, 12, 36
-PARENder (40), , 12, 37
-BLOQAB (44), , 12, 39
-LOCAL (5), , 13, 5
-T_FLOAT (8), , 13, 11
-IDENT (13), prom, 13, 17
-IGUAL (19), , 13, 22
-PARENTizq (39), , 13, 24
-IDENT (13), x, 13, 25
-SUMA (20), , 13, 27
-IDENT (13), y, 13, 29
-PARENder (40), , 13, 30
-DIVISION (23), , 13, 32
-INT_LIT (14), 2, 13, 34
-ENDL (6), , 13, 36
-RETURN (54), , 14, 5
-IDENT (13), prom, 14, 12
-ENDL (6), , 14, 17
-T_COAL (12), , 16, 1
-MAIN (2), , 16, 6
-PARENTizq (39), , 16, 13
-PARENder (40), , 16, 14
-BLOQAB (44), , 16, 16
-LOCAL (5), , 17, 5
-T_INT (7), , 17, 11
-IDENT (13), num1, 17, 15
-IGUAL (19), , 17, 20
-INT_LIT (14), 5, 17, 22
-ENDL (6), , 17, 24
-LOCAL (5), , 18, 5
-T_INT (7), , 18, 11
-IDENT (13), num2, 18, 15
-IGUAL (19), , 18, 20
-INT_LIT (14), 10, 18, 22
-ENDL (6), , 18, 25
-LOCAL (5), , 20, 5
-T_INT (7), , 20, 11
-IDENT (13), suma, 20, 15
-IGUAL (19), , 20, 20
-IDENT (13), num1, 20, 22
-SUMA (20), , 20, 27
-ENDL (6), , 20, 29
-LOCAL (5), , 22, 5
-T_BOOL (9), , 22, 11
-IDENT (13), resultado, 22, 16
-IGUAL (19), , 22, 26
-IDENT (13), num1, 22, 28
-GT (31), , 22, 33
-INT_LIT (14), 5, 22, 35
-MODULO (25), , 22, 37
-IDENT (13), num2, 22, 39
-ENDL (6), , 22, 44
-IDENT (13), num1, 24, 5
-IGUAL (19), , 24, 10
-IDENT (13), num1, 24, 12
-SUMA (20), , 24, 17
-INT_LIT (14), 1, 24, 19
-ENDL (6), , 24, 21
-DECIDE (46), , 26, 5
-OF (47), , 26, 12
-PARENTizq (39), , 27, 9
-IDENT (13), num1, 27, 11
-GT (31), , 27, 16
-INT_LIT (14), 10, 27, 18
-PARENTizq (39), , 27, 21
-IDENT (13), num1, 28, 13
-IGUAL (19), , 28, 18
-INT_LIT (14), 0, 28, 20
-ENDL (6), , 28, 22
-BLOQCR (45), , 29, 9
-END (49), , 30, 5
-DECIDE (46), , 30, 9
-ENDL (6), , 30, 16
-LOOP (50), , 32, 5
-IDENT (13), num2, 33, 9
-IGUAL (19), , 33, 14
-IDENT (13), num2, 33, 16
-RESTA (21), , 33, 21
-INT_LIT (14), 1, 33, 23
-ENDL (6), , 33, 25
-EXIT (51), , 34, 9
-WHEN (52), , 34, 14
-IDENT (13), num2, 34, 19
-EQ (33), , 34, 24
-INT_LIT (14), 0, 34, 27
-ENDL (6), , 34, 29
-END (49), , 35, 5
-LOOP (50), , 35, 9
-ENDL (6), , 35, 14
-FOR (53), , 37, 5
-PARENTizq (39), , 37, 9
-IDENT (13), num1, 37, 11
-IGUAL (19), , 37, 16
-INT_LIT (14), 0, 37, 18
-IDENT (13), num1, 37, 20
-LT (29), , 37, 25
-INT_LIT (14), 5, 37, 27
-ENDL (6), , 37, 29
-IDENT (13), num1, 37, 34
-IGUAL (19), , 37, 39
-IDENT (13), num1, 37, 41
-SUMA (20), , 37, 46
-INT_LIT (14), 1, 37, 48
-PARENder (40), , 37, 50
-BLOQAB (44), , 37, 52
-IDENT (13), num2, 38, 9
-IGUAL (19), , 38, 14
-IDENT (13), num2, 38, 16
-SUMA (20), , 38, 21
-INT_LIT (14), 1, 38, 23
-ENDL (6), , 38, 25
-BLOQCR (45), , 39, 5
-RETURN (54), , 41, 5
-IDENT (13), num1, 41, 12
-ENDL (6), , 41, 17
-BLOQCR (45), , 42, 1
+WORLD (4), , 10, 1
+T_INT (7), , 10, 7
+IDENT (13), count, 10, 11
+IGUAL (19), , 10, 17
+INT_LIT (14), 10, 10, 19
+ENDL (6), , 10, 22
+WORLD (4), , 11, 1
+T_STRING (11), , 11, 7
+IDENT (13), greeting, 11, 14
+IGUAL (19), , 11, 23
+STRING_LIT (18), hola mundo, 11, 25
+ENDL (6), , 11, 38
+GIFT (3), , 20, 1
+T_BOOL (9), , 20, 6
+IDENT (13), _miOtraFun_, 20, 11
+PARENTizq (39), , 20, 24
+PARENder (40), , 20, 27
+BLOQAB (44), , 20, 31
+RETURN (54), , 21, 2
+RESTA (21), , 21, 9
+FLOAT_LIT (15), 5.6, 21, 10
+ENDL (6), , 21, 14
+BLOQCR (45), , 22, 3
+T_COAL (12), , 24, 1
+MAIN (2), , 24, 6
+PARENTizq (39), , 24, 14
+PARENder (40), , 24, 16
+BLOQAB (44), , 24, 18
+LOCAL (5), , 25, 3
+T_INT (7), , 25, 9
+IDENT (13), x, 25, 13
+IGUAL (19), , 25, 15
+INT_LIT (14), 42, 25, 17
+ENDL (6), , 25, 20
+LOCAL (5), , 26, 3
+T_STRING (11), , 26, 9
+IDENT (13), msg, 26, 16
+IGUAL (19), , 26, 20
+STRING_LIT (18), comentarios ok, 26, 22
+ENDL (6), , 26, 39
+BLOQCR (45), , 27, 1
 ACCEPTED
 
 ÁRBOL SINTÁCTICO:
 PROGRAM
   GLOBALES
-    DECL_GLOBAL [contador]
+    DECL_GLOBAL [count]
       TIPO [int]
-    DECL_GLOBAL [matriz]
-      TIPO [char]
-      ARRAY_INIT
-        FILAS
-          FILA
-            ELEMENTOS
-              LITERAL_CHAR [a]
-              LITERAL_CHAR [b]
-              LITERAL_CHAR [c]
-          FILA
-            ELEMENTOS
-              LITERAL_CHAR [d]
-              LITERAL_CHAR [e]
-              LITERAL_CHAR [f]
+      LITERAL_INT [10]
+    DECL_GLOBAL [greeting]
+      TIPO [string]
+      LITERAL_STRING [hola mundo]
   FUNCIONES
-    FUNCION [suma]
-      TIPO [int]
-      PARAMETROS
-        PARAM [a]
-          TIPO [int]
-        PARAM [b]
-          TIPO [int]
+    FUNCION [_miOtraFun_]
+      TIPO [bool]
       BLOQUE
         SENTENCIAS
-          DECL_LOCAL [resultado]
-            TIPO [int]
-            OPERACION [+]
-              IDENT [a]
-              IDENT [b]
           RETURN
-            IDENT [resultado]
+            OPERACION [-unario]
+              LITERAL_FLOAT [5.6]
   MAIN [navidad]
     BLOQUE
       SENTENCIAS
         DECL_LOCAL [x]
           TIPO [int]
-          LITERAL_INT [5]
-        DECL_LOCAL [y]
-          TIPO [int]
-          LITERAL_INT [10]
-        ASIGNACION [x]
-          LLAMADA [suma]
-            ARGUMENTOS
-              IDENT [x]
-              IDENT [y]
-        DECIDE
-          CASOS
-            CASO
-              OPERACION [>]
-                IDENT [x]
-                LITERAL_INT [10]
-              BLOQUE
-                SENTENCIAS
-                  ASIGNACION [x]
-                    OPERACION [-]
-                      IDENT [x]
-                      LITERAL_INT [1]
-            CASO
-              OPERACION [==]
-                IDENT [x]
-                LITERAL_INT [10]
-              BLOQUE
-                SENTENCIAS
-                  ASIGNACION [x]
-                    OPERACION [+]
-                      IDENT [x]
-                      LITERAL_INT [1]
-          ELSE
-            BLOQUE
-              SENTENCIAS
-                ASIGNACION [x]
-                  LITERAL_INT [0]
-        LOOP
-          SENTENCIAS
-            ASIGNACION [x]
-              OPERACION [-]
-                IDENT [x]
-                LITERAL_INT [1]
-          EXIT
-            OPERACION [==]
-              IDENT [x]
-              LITERAL_INT [0]
-        FOR
-          ASIGNACION [x]
-            LITERAL_INT [0]
-          OPERACION [<]
-            IDENT [x]
-            LITERAL_INT [3]
-          ASIGNACION [x]
-            OPERACION [+]
-              IDENT [x]
-              LITERAL_INT [1]
-          BLOQUE
-            SENTENCIAS
-              ASIGNACION_ARRAY
-                ARRAY_ACCESS [matriz]
-                  IDENT [x]
-                  LITERAL_INT [0]
-                LITERAL_CHAR [z]
-        RETURN
-          IDENT [x]
+          LITERAL_INT [42]
+        DECL_LOCAL [msg]
+          TIPO [string]
+          LITERAL_STRING [comentarios ok]

@@ -1,37 +1,27 @@
-world int contador endl
-world char matriz[2][3] = ¡ ¡ 'a', 'b', 'c' ! , ¡ 'd', 'e', 'f' ! ! endl
+| comentario de línea inicial
 
-gift int suma¿int a, int b? ¡
-    local int resultado = a + b endl
-    return resultado endl
-!
+є
+Comentario multilínea de prueba.
+Incluye saltos de línea, símbolos ++ -- -> = <= >= y barras |.
+También muestra comillas \" y texto que parece código.
+Fin del primer comentario multilínea.
+э
 
-coal navidad¿? ¡
-    local int x = 5 endl
-    local int y = 10 endl
+world int count = 10 endl
+world string greeting = "hola mundo" endl
 
-    x = suma¿x, y? endl
+є
+Segunda multilínea de prueba.
+Contiene líneas vacías y caracteres especiales.
 
-    decide of
-        ¿ x > 10 ? -> ¡
-            x = x - 1 endl
-        !
-        ¿ x == 10 ? -> ¡
-            x = x + 1 endl
-        !
-        else -> ¡
-            x = 0 endl
-        !
-    end decide endl
+Termina aquí.
+э
 
-    loop
-        x = x - 1 endl
-        exit when x == 0 endl
-    end loop endl
+gift bool _miOtraFun_  ¿  ?   ¡ 
+	return -5.6 endl  
+  ! 
 
-    for ¿ x = 0 endl x < 3 endl x = x + 1 ? ¡
-        matriz[x][0] = 'z' endl
-    !
-
-    return x endl
+coal navidad ¿ ? ¡
+  local int x = 42 endl
+  local string msg = "comentarios ok" endl
 !

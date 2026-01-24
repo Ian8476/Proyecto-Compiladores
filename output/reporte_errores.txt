@@ -1,11 +1,7 @@
 === REPORTE DE ERRORES ===
 Total errores léxicos: 0
-Total errores sintácticos: 5
-Total errores: 5
+Total errores sintácticos: 0
+Total errores: 0
 
 === LISTA DETALLADA ===
-ERROR SINTÁCTICO: Error en declaración global - se salta a siguiente línea
-ERROR SINTÁCTICO: Error sintáctico en línea: se esperaba una sentencia válida
-ERROR SINTÁCTICO: Error sintáctico en línea: se esperaba una sentencia válida
-ERROR SINTÁCTICO: Error sintáctico en línea: se esperaba una sentencia válida
-ERROR SINTÁCTICO: Error sintáctico en línea: se esperaba una sentencia válida
+No se encontraron errores.

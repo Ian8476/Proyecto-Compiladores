@@ -20,7 +20,7 @@ public class Main {
         ErrorHandler.limpiar();
 
         //Lecutra del archivo de entrada
-        Reader reader = new FileReader("input/prueba_error.txt");
+        Reader reader = new FileReader("input/prueba.txt");
         Lexer lexer = new Lexer(reader);
 
         // Crear el directorio de salida si no existe
