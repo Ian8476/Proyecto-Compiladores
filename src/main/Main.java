@@ -6,6 +6,9 @@ import java_cup.runtime.Symbol;
 import lexer.Parser;
 import arbolSintactico.arbol;
 import util.ErrorHandler;
+import util.SymbolTable;
+import util.Token;
+
 /**
  * Clase principal para ejecutar el análisis léxico y sintáctico.
  * Lee un archivo de entrada, genera tokens, valida la sintaxis,
@@ -14,12 +17,20 @@ import util.ErrorHandler;
  * 
  */
 public class Main {
+    // Tabla de símbolos compartida en toda la compilación
+    private static SymbolTable tablaSimbolos;
     public static void main(String[] args) throws Exception {
         
         // Limpiar errores previos
         ErrorHandler.limpiar();
+        
+        // ========================================
+        // INICIALIZAR TABLA DE SÍMBOLOS
+        // ========================================
+        tablaSimbolos = new SymbolTable();
+        System.out.println(" Tabla de símbolos inicializada\n");
 
-        //Lecutra del archivo de entrada
+        //Lectura del archivo de entrada
         Reader reader = new FileReader("input/prueba.txt");
         Lexer lexer = new Lexer(reader);
 
@@ -27,9 +38,18 @@ public class Main {
         // La salida es en la carpeta "output"
         java.io.File outDir = new java.io.File("output");
         if (!outDir.exists()) outDir.mkdirs();
+        
         try (java.io.BufferedWriter w = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(outDir, "tokens.txt")))) {
             Symbol token;
-            // Lectura de tokens hasta EOF con una iteracion    
+            
+            // ========================================
+            // FASE 1: ANÁLISIS LÉXICO
+            // ========================================
+            System.out.println("═══════════════════════════════════════════════════════════");
+            System.out.println("FASE 1: ANÁLISIS LÉXICO");
+            System.out.println("═══════════════════════════════════════════════════════════\n");
+            
+            // Lectura de tokens hasta EOF con una iteración    
             while ((token = lexer.next_token()).sym != sym.EOF) {
                 String name = token.sym >= 0 && token.sym < sym.terminalNames.length
                         ? sym.terminalNames[token.sym]
@@ -41,16 +61,20 @@ public class Main {
                 w.write(out);
                 w.newLine();
                 System.out.println(out);
+                
+                // Registrar identificadores en la tabla de símbolos
+                if (name.equals("IDENT")) {
+                    registrarIdentificador(lexema, linea, columna);
+                }
             }
 
-
-            // Validacion sintactica
-            //w.newLine(); es para escribir en el archivo de salida
-            //w.newLine();
-            //w.write("Validación sintaxis:");
-            //w.newLine();
-
-            // Recreacion del Lexer y Parser para esta validacion
+            // ========================================
+            // FASE 2: ANÁLISIS SINTÁCTICO
+            // ========================================
+            System.out.println("\n═══════════════════════════════════════════════════════════");
+            System.out.println("FASE 2: ANÁLISIS SINTÁCTICO");
+            System.out.println("═══════════════════════════════════════════════════════════\n");
+            
             // Recrear Lexer y Parser para validación sintáctica
             try (Reader reader2 = new FileReader("input/prueba.txt")) {
                 Lexer lexer2 = new Lexer(reader2);
@@ -65,14 +89,24 @@ public class Main {
                     w.newLine();
                     w.flush();
                     // También imprime en consola
-                    System.out.println("\n=== VALIDACIÓN SINTÁCTICA ===");
-                    System.out.println("ACCEPTED");
+                    System.out.println(" Análisis sintáctico completado: ACCEPTED");
                     
                     // Mostrar el árbol sintáctico
                     if (result != null && result.value instanceof arbol) {
                         arbol ast = (arbol) result.value;
-                        System.out.println("\n=== ÁRBOL SINTÁCTICO ===");
+                        System.out.println("\n═══════════════════════════════════════════════════════════");
+                        System.out.println("ÁRBOL SINTÁCTICO");
+                        System.out.println("═══════════════════════════════════════════════════════════\n");
                         System.out.println(ast.toString());
+                        
+                        // ========================================
+                        // FASE 3: ANÁLISIS SEMÁNTICO
+                        // ========================================
+                        System.out.println("\n═══════════════════════════════════════════════════════════");
+                        System.out.println("FASE 3: ANÁLISIS SEMÁNTICO");
+                        System.out.println("═══════════════════════════════════════════════════════════\n");
+                        
+                        analizarSemantico(ast);
                         
                         // Guardar el árbol en el archivo de salida
                         w.newLine();
@@ -87,12 +121,21 @@ public class Main {
                             String jsonFormateado = formatearJSON(ast.toJSON());
                             wJson.write(jsonFormateado);
                             wJson.flush();
-                            System.out.println("\n=== JSON guardado en output/arbol.json ===");
+                            System.out.println("\n JSON guardado en output/arbol.json");
                             // Después de guardar el árbol como JSON
                             generarHTMLArbol(ast, "output/arbol_interactivo.html");
-                            System.out.println("\n=== grafico html generado ===");
+                            System.out.println(" Gráfico HTML generado en output/arbol_interactivo.html");
                         }
                     }
+                    
+                    // ========================================
+                    // GENERAR REPORTES DE TABLA DE SÍMBOLOS
+                    // ========================================
+                    System.out.println("\n═══════════════════════════════════════════════════════════");
+                    System.out.println("TABLA DE SÍMBOLOS GENERADA");
+                    System.out.println("═══════════════════════════════════════════════════════════\n");
+                    
+                    generarReportesTablaSimbolos(outDir, w);
                     
                     // Generar reporte de errores si hay
                     if (ErrorHandler.getTotalErrores() > 0) {
@@ -117,10 +160,6 @@ public class Main {
                     e.printStackTrace(System.err);
                 }
             }
-
-
-
-
 
         }
 
@@ -374,7 +413,90 @@ public class Main {
         return json.toString();
     }
 
+    // ========================================
+    // MÉTODOS PARA TABLA DE SÍMBOLOS
+    // ========================================
 
+    /**
+     * Registra un identificador en la tabla de símbolos.
+     */
+    private static void registrarIdentificador(String nombre, int linea, int columna) {
+        Token token = new Token("IDENT", nombre, linea, columna);
+        
+        // Si no existe, agregarlo
+        if (!tablaSimbolos.existeEnCualquierAlcance(nombre)) {
+            tablaSimbolos.agregar(nombre, token);
+            System.out.println("  [TABLA] Registrado: " + nombre);
+        }
+    }
 
+    /**
+     * Realiza análisis semántico básico del árbol sintáctico.
+     */
+    private static void analizarSemantico(arbol nodo) {
+        if (nodo == null) return;
+        
+        // Verificar declaraciones y usos de variables
+        if (nodo.tipo.equals("DECL_GLOBAL") || nodo.tipo.equals("DECL_LOCAL")) {
+            String nombre = nodo.valor;
+            Token token = tablaSimbolos.buscar(nombre);
+            
+            if (token != null) {
+                // Obtener tipo de la declaración
+                if (nodo.hijos.size() > 0) {
+                    arbol tipoNodo = nodo.hijos.get(0);
+                    if (tipoNodo.tipo.equals("TIPO")) {
+                        token.setTipoVariable(tipoNodo.valor);
+                        System.out.println("  [SEMÁNTICA] Declaración: " + nombre + " : " + tipoNodo.valor);
+                    }
+                }
+                
+                // Si hay inicialización (segundo hijo)
+                if (nodo.hijos.size() > 1) {
+                    token.setInicializado(true);
+                    System.out.println("  [SEMÁNTICA] Inicialización: " + nombre);
+                }
+            }
+        }
+        
+        // Verificar uso de variables (IDENT en expresiones)
+        if (nodo.tipo.equals("IDENT")) {
+            String nombre = nodo.valor;
+            Token token = tablaSimbolos.buscar(nombre);
+            
+            if (token == null) {
+                System.err.println("  [ERROR] Variable no declarada: " + nombre + " (línea " + nodo.linea + ")");
+                ErrorHandler.agregarErrorSintactico("Variable no declarada: " + nombre, nodo.linea, 0);
+            }
+        }
+        
+        // Procesar recursivamente los hijos
+        for (arbol hijo : nodo.hijos) {
+            analizarSemantico(hijo);
+        }
+    }
 
+    /**
+     * Genera reportes de la tabla de símbolos.
+     */
+    private static void generarReportesTablaSimbolos(java.io.File outDir, java.io.BufferedWriter wPrincipal) throws IOException {
+        
+        // Mostrar reporte en consola
+        //Opcional
+        System.out.println(tablaSimbolos.generarReporte());
+        
+        // Reporte en texto
+        try (java.io.BufferedWriter w = new java.io.BufferedWriter(
+                new java.io.FileWriter(new java.io.File(outDir, "symbol_table.txt")))) {
+            w.write(tablaSimbolos.generarReporte());
+            System.out.println(" Reporte de tabla de símbolos (texto): output/symbol_table.txt");
+        }
+        
+        // Reporte en JSON
+        try (java.io.BufferedWriter w = new java.io.BufferedWriter(
+                new java.io.FileWriter(new java.io.File(outDir, "symbol_table.json")))) {
+            w.write(tablaSimbolos.generarReporteJSON());
+            System.out.println(" Reporte de tabla de símbolos (JSON): output/symbol_table.json");
+        }
+    }
 }

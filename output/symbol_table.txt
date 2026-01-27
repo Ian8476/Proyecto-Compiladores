@@ -1,0 +1,31 @@
+
+═══════════════════════════════════════════════════════════
+                    REPORTE DE TABLAS DE SÍMBOLOS
+═══════════════════════════════════════════════════════════
+
+╔════════════════════════════════════╗
+║ TABLA: GLOBAL (Nivel 0 - GLOBAL)
+╠════════════════════════════════════╣
+║ resultado : IDENT (línea 3)
+║ limite : IDENT (línea 4)
+║ i : IDENT (línea 7)
+║ exito : IDENT (línea 17)
+║ incompleto : IDENT (línea 20)
+║ otros : IDENT (línea 23)
+╚════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════
+                    HISTORIAL DE OPERACIONES
+═════════════════════════════════════════════════════════════
+1. AGREGAR: resultado en GLOBAL
+2. AGREGAR: limite en GLOBAL
+3. AGREGAR: i en GLOBAL
+4. AGREGAR: exito en GLOBAL
+5. AGREGAR: incompleto en GLOBAL
+6. AGREGAR: otros en GLOBAL
+
+═════════════════════════════════════════════════════════════
+Total de tokens registrados: 6
+Total de tablas: 1
+Alcance actual: GLOBAL
+═════════════════════════════════════════════════════════════
