@@ -8,6 +8,7 @@ import arbolSintactico.arbol;
 import util.ErrorHandler;
 import util.SymbolTable;
 import util.Token;
+import util.CodeGenerator;
 
 /**
  * Clase principal para ejecutar el análisis léxico y sintáctico.
@@ -30,8 +31,15 @@ public class Main {
         tablaSimbolos = new SymbolTable();
         System.out.println(" Tabla de símbolos inicializada\n");
 
+        // Determinar archivo de entrada
+        String archivoEntrada = "input/prueba.txt";
+        if (args.length > 0) {
+            archivoEntrada = args[0];
+            System.out.println("Usando archivo de entrada: " + archivoEntrada + "\n");
+        }
+
         //Lectura del archivo de entrada
-        Reader reader = new FileReader("input/prueba.txt");
+        Reader reader = new FileReader(archivoEntrada);
         Lexer lexer = new Lexer(reader);
 
         // Crear el directorio de salida si no existe
@@ -76,7 +84,7 @@ public class Main {
             System.out.println("═══════════════════════════════════════════════════════════\n");
             
             // Recrear Lexer y Parser para validación sintáctica
-            try (Reader reader2 = new FileReader("input/prueba.txt")) {
+            try (Reader reader2 = new FileReader(archivoEntrada)) {
                 Lexer lexer2 = new Lexer(reader2);
                 // Crear el parser
                 @SuppressWarnings("deprecation")
@@ -107,6 +115,15 @@ public class Main {
                         System.out.println("═══════════════════════════════════════════════════════════\n");
                         
                         analizarSemantico(ast);
+                        
+                        // ========================================
+                        // FASE 4: GENERACIÓN DE CÓDIGO MIPS
+                        // ========================================
+                        System.out.println("\n═══════════════════════════════════════════════════════════");
+                        System.out.println("FASE 4: GENERACIÓN DE CÓDIGO MIPS");
+                        System.out.println("═══════════════════════════════════════════════════════════\n");
+                        
+                        generarCodigoMIPS(ast, outDir);
                         
                         // Guardar el árbol en el archivo de salida
                         w.newLine();
@@ -497,6 +514,36 @@ public class Main {
                 new java.io.FileWriter(new java.io.File(outDir, "symbol_table.json")))) {
             w.write(tablaSimbolos.generarReporteJSON());
             System.out.println(" Reporte de tabla de símbolos (JSON): output/symbol_table.json");
+        }
+    }
+
+    /**
+     * Genera código MIPS a partir del árbol sintáctico.
+     * Esta es una versión básica para demostración.
+     */
+    private static void generarCodigoMIPS(arbol ast, java.io.File outDir) {
+        try {
+            System.out.println("  Iniciando generación de código MIPS...\n");
+            
+            // Crear el generador de código
+            CodeGenerator generador = new CodeGenerator(tablaSimbolos);
+            
+            // Generar código a partir del AST
+            generador.generarCodigo(ast);
+            
+            // Guardar el código MIPS en un archivo
+            String rutaMIPS = new java.io.File(outDir, "codigo.asm").getAbsolutePath();
+            generador.guardarCodigo(rutaMIPS);
+            
+            // Mostrar resumen
+            System.out.println("\n  ═══════════════════════════════════════════════════════════");
+            System.out.println("  Código MIPS generado exitosamente");
+            System.out.println("  Archivo: output/codigo.asm");
+            System.out.println("  ═══════════════════════════════════════════════════════════");
+            
+        } catch (Exception e) {
+            System.err.println("  [ERROR] Fallo en generación de código MIPS: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 }

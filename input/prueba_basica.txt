@@ -1,0 +1,8 @@
+| Prueba básica: operaciones matemáticas simples
+
+world int numero = 42 endl
+
+coal navidad ¿ ? ¡
+  local int resultado = 0 endl
+  resultado = numero + 10 endl
+!

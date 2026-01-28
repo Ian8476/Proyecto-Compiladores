@@ -1,0 +1,11 @@
+| Prueba básica: declaración de variables y operaciones simples
+
+world int x = 5 endl
+world int y = 3 endl
+
+coal navidad ¿ ? ¡
+  local int suma = 0 endl
+  suma = x + y endl
+  local int producto = 0 endl
+  producto = x * y endl
+!
