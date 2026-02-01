@@ -6,10 +6,10 @@
       "tipo": "GLOBAL",
       "simbolos": [
         {
-          "id": "resultado",
+          "id": "numero",
           "tipo_token": "IDENT",
-          "lexema": "resultado",
-          "valor": "resultado",
+          "lexema": "numero",
+          "valor": "numero",
           "linea": 3,
           "columna": 11,
           "tipo_variable": "int",
@@ -17,56 +17,12 @@
           "inicializado": true
         },
         {
-          "id": "limite",
+          "id": "resultado",
           "tipo_token": "IDENT",
-          "lexema": "limite",
-          "valor": "limite",
-          "linea": 4,
-          "columna": 11,
-          "tipo_variable": "int",
-          "es_arreglo": false,
-          "inicializado": true
-        },
-        {
-          "id": "i",
-          "tipo_token": "IDENT",
-          "lexema": "i",
-          "valor": "i",
-          "linea": 7,
+          "lexema": "resultado",
+          "valor": "resultado",
+          "linea": 6,
           "columna": 13,
-          "tipo_variable": "int",
-          "es_arreglo": false,
-          "inicializado": true
-        },
-        {
-          "id": "exito",
-          "tipo_token": "IDENT",
-          "lexema": "exito",
-          "valor": "exito",
-          "linea": 17,
-          "columna": 17,
-          "tipo_variable": "int",
-          "es_arreglo": false,
-          "inicializado": true
-        },
-        {
-          "id": "incompleto",
-          "tipo_token": "IDENT",
-          "lexema": "incompleto",
-          "valor": "incompleto",
-          "linea": 20,
-          "columna": 17,
-          "tipo_variable": "int",
-          "es_arreglo": false,
-          "inicializado": true
-        },
-        {
-          "id": "otros",
-          "tipo_token": "IDENT",
-          "lexema": "otros",
-          "valor": "otros",
-          "linea": 23,
-          "columna": 17,
           "tipo_variable": "int",
           "es_arreglo": false,
           "inicializado": true
@@ -74,6 +30,6 @@
       ]
     }
   ],
-  "total_tokens": 6,
+  "total_tokens": 2,
   "alcance_actual": "GLOBAL"
 }

@@ -81,21 +81,21 @@ javac -cp ".;lib/cup.jar" -d . ^
 java -cp ".;lib/cup.jar;." main.Main
 ```
 Procesa: `input/prueba.txt`
-Salida MIPS: `input/prueba.asm`
+Salida MIPS: `output/prueba.asm`
 
 ### Opción 2: Especificar archivo de entrada
 ```batch
 java -cp ".;lib/cup.jar;." main.Main input/miarchivo.txt
 ```
 Procesa: `input/miarchivo.txt`
-Salida MIPS: `input/miarchivo.asm`
+Salida MIPS: `output/miarchivo.asm`
 
-### Opción 3: Especificar entrada y salida
+### Opción 3: Especificar entrada y salida personalizada
 ```batch
-java -cp ".;lib/cup.jar;." main.Main input/miarchivo.txt output/miarchivo.asm
+java -cp ".;lib/cup.jar;." main.Main input/miarchivo.txt output/miarchivo_custom.asm
 ```
 Procesa: `input/miarchivo.txt`
-Salida MIPS: `output/miarchivo.asm`
+Salida MIPS: `output/miarchivo_custom.asm`
 
 ---
 
@@ -103,13 +103,13 @@ Salida MIPS: `output/miarchivo.asm`
 
 Después de ejecutar el compilador, en el directorio `output/` se generan:
 
+- **prueba.asm**: Código MIPS generado (nombre derivado del archivo de entrada)
 - **tokens.txt**: Lista de tokens identificados en análisis léxico
 - **arbol.json**: Árbol sintáctico en formato JSON
 - **arbol_interactivo.html**: Visualización interactiva del árbol
 - **symbol_table.json**: Tabla de símbolos en formato JSON
 - **symbol_table.txt**: Tabla de símbolos en formato texto
 - **reporte_errores.txt**: Reporte de errores sintácticos y semánticos
-- **ARCHIVO_ENTRADA.asm**: Código MIPS generado (ubicado en mismo directorio que entrada)
 
 ---
 
@@ -167,11 +167,17 @@ El código MIPS generado contiene:
 cd Proyecto-Compiladores
 compile.bat
 
-REM Luego ejecutar:
-java -cp ".;lib/cup.jar;." main.Main input/prueba.txt output/prueba.asm
-
-REM O simplemente:
+REM Ejecución 1: Archivo por defecto
 java -cp ".;lib/cup.jar;." main.Main
+REM Genera: output/prueba.asm
+
+REM Ejecución 2: Archivo específico
+java -cp ".;lib/cup.jar;." main.Main input/prueba_simple.txt
+REM Genera: output/prueba_simple.asm
+
+REM Ejecución 3: Con salida personalizada
+java -cp ".;lib/cup.jar;." main.Main input/miarchivo.txt output/resultado_custom.asm
+REM Genera: output/resultado_custom.asm
 ```
 
 ---
@@ -194,9 +200,12 @@ java -cp ".;lib/cup.jar;." main.Main
 
 1. El archivo `compile.bat` debe ejecutarse desde el directorio raíz del proyecto
 2. Se requiere Java 8 o superior
-3. Los archivos de entrada deben ubicarse preferiblemente en el directorio `input/`
-4. La extensión del archivo de salida MIPS siempre será `.asm`
-5. Los caracteres especiales en nombres de archivos pueden causar problemas
+3. Los archivos de entrada deben ubicarse en el directorio `input/`
+4. **Todos los archivos .asm se guardan automáticamente en la carpeta `output/`**
+5. Si no especifica archivo de salida, se deriva automáticamente del nombre de entrada
+   - Ejemplo: `input/prueba.txt` → `output/prueba.asm`
+6. Puede especificar una ruta de salida personalizada en el segundo argumento
+7. La extensión del archivo de salida MIPS es siempre `.asm`
 
 ---
 

@@ -372,7 +372,7 @@ public class CodeGenerator {
     // ===== MÉTODOS PARA MANEJO DE GLOBALES =====
     
     /**
-     * Genera código para el bloque de globales
+     * código para el bloque de globales
      */
     private void generarGlobales(arbol nodo) {
         System.out.println("  [GENERACIÓN] Analizando declaraciones globales");
@@ -384,7 +384,7 @@ public class CodeGenerator {
     // ===== MÉTODOS PARA MANEJO DE FUNCIONES =====
     
     /**
-     * Genera código para el bloque de funciones
+     *  código para el bloque de funciones
      */
     private void generarFunciones(arbol nodo) {
         System.out.println("  [GENERACIÓN] Analizando funciones definidas");
@@ -394,7 +394,7 @@ public class CodeGenerator {
     }
     
     /**
-     * Genera código para una función individual
+     * código para una función individual
      */
     private void generarFuncion(arbol nodo) {
         String nombreFunc = nodo.valor;

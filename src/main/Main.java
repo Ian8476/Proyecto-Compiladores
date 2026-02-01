@@ -48,10 +48,15 @@ public class Main {
         
         // Si no se especificó archivo de salida, derivarlo del archivo de entrada
         if (archivoSalidaMIPS == null) {
-            archivoSalidaMIPS = archivoEntrada.replaceAll("\\.[^.]+$", ".asm");
-            if (archivoSalidaMIPS.equals(archivoEntrada)) {
-                archivoSalidaMIPS = archivoEntrada + ".asm";
+            // Obtener solo el nombre del archivo sin la ruta
+            String nombreArchivo = new java.io.File(archivoEntrada).getName();
+            // Cambiar extensión a .asm
+            archivoSalidaMIPS = nombreArchivo.replaceAll("\\.[^.]+$", ".asm");
+            if (archivoSalidaMIPS.equals(nombreArchivo)) {
+                archivoSalidaMIPS = nombreArchivo + ".asm";
             }
+            // Guardar en la carpeta output
+            archivoSalidaMIPS = "output/" + archivoSalidaMIPS;
             System.out.println("Archivo de salida MIPS derivado: " + archivoSalidaMIPS);
         }
         
