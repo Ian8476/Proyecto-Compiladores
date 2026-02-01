@@ -1,42 +1,39 @@
-WORLD (4), , 3, 1
-T_INT (7), , 3, 7
-IDENT (13), numero, 3, 11
-IGUAL (19), , 3, 18
-INT_LIT (14), 42, 3, 20
-ENDL (6), , 3, 23
-T_COAL (12), , 5, 1
-MAIN (2), , 5, 6
-PARENTizq (39), , 5, 14
-PARENder (40), , 5, 16
-BLOQAB (44), , 5, 18
-LOCAL (5), , 6, 3
-T_INT (7), , 6, 9
-IDENT (13), resultado, 6, 13
-IGUAL (19), , 6, 23
-INT_LIT (14), 0, 6, 25
-ENDL (6), , 6, 27
-IDENT (13), resultado, 7, 3
-IGUAL (19), , 7, 13
-IDENT (13), numero, 7, 15
-SUMA (20), , 7, 22
-INT_LIT (14), 10, 7, 24
-ENDL (6), , 7, 27
-BLOQCR (45), , 8, 1
+WORLD (4), , 1, 1
+T_INT (7), , 1, 7
+IDENT (13), x, 1, 11
+ENDL (6), , 1, 13
+WORLD (4), , 2, 1
+T_STRING (11), , 2, 7
+IDENT (13), s, 2, 14
+ENDL (6), , 2, 16
+T_COAL (12), , 4, 1
+MAIN (2), , 4, 6
+PARENTizq (39), , 4, 14
+PARENder (40), , 4, 16
+BLOQAB (44), , 4, 18
+LOCAL (5), , 5, 3
+T_INT (7), , 5, 9
+IDENT (13), c, 5, 13
+IGUAL (19), , 5, 15
+IDENT (13), x, 5, 17
+SUMA (20), , 5, 19
+IDENT (13), s, 5, 21
+ENDL (6), , 5, 23
+BLOQCR (45), , 6, 1
 ACCEPTED
 
 ÁRBOL SINTÁCTICO:
 PROGRAM
   GLOBALES
-    DECL_GLOBAL [numero]
+    DECL_GLOBAL [x]
       TIPO [int]
-      LITERAL_INT [42]
+    DECL_GLOBAL [s]
+      TIPO [string]
   MAIN [navidad]
     BLOQUE
       SENTENCIAS
-        DECL_LOCAL [resultado]
+        DECL_LOCAL [c]
           TIPO [int]
-          LITERAL_INT [0]
-        ASIGNACION [resultado]
           OPERACION [+]
-            IDENT [numero]
-            LITERAL_INT [10]
+            IDENT [x]
+            IDENT [s]

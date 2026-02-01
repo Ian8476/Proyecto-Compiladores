@@ -6,18 +6,20 @@
 ╔════════════════════════════════════╗
 ║ TABLA: GLOBAL (Nivel 0 - GLOBAL)
 ╠════════════════════════════════════╣
-║ numero : IDENT (línea 3)
-║ resultado : IDENT (línea 6)
+║ x : IDENT (línea 1)
+║ s : IDENT (línea 2)
+║ c : IDENT (línea 5)
 ╚════════════════════════════════════╝
 
 ═════════════════════════════════════════════════════════════
                     HISTORIAL DE OPERACIONES
 ═════════════════════════════════════════════════════════════
-1. AGREGAR: numero en GLOBAL
-2. AGREGAR: resultado en GLOBAL
+1. AGREGAR: x en GLOBAL
+2. AGREGAR: s en GLOBAL
+3. AGREGAR: c en GLOBAL
 
 ═════════════════════════════════════════════════════════════
-Total de tokens registrados: 2
+Total de tokens registrados: 3
 Total de tablas: 1
 Alcance actual: GLOBAL
 ═════════════════════════════════════════════════════════════

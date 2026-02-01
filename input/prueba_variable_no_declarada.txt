@@ -1,0 +1,5 @@
+world int x endl
+
+coal navidad ¿ ? ¡
+  local int resultado = y + 10 endl
+!

@@ -1,6 +1,8 @@
 package lexer;
 import java_cup.runtime.Symbol;
 import arbolSintactico.arbol;
+import java.util.HashMap;
+import java.util.Map;
 
 /* =========================
    TERMINALES (TOKENS)
@@ -67,6 +69,224 @@ precedence right INC, DEC;
 start with program;
 
 /* =========================
+   ANÁLISIS SEMÁNTICO (Clase Interna)
+   ========================= */
+:}
+
+action code {: 
+    /**
+     * Clase auxiliar para realizar análisis semántico durante el parsing
+     */
+    public static class AnalizadorSemantico {
+        private static Map<String, String> tablaVariablesGlobales = new HashMap<>();
+        private static Map<String, String> tablaVariablesLocales = new HashMap<>();
+        private static Map<String, String> tablaFunciones = new HashMap<>();
+        
+        /**
+         * Obtiene el tipo de una expresión desde el árbol sintáctico
+         */
+        public static String obtenerTipoExpresion(arbol nodo) {
+            if (nodo == null) return "unknown";
+            
+            String tipo = nodo.tipo;
+            String valor = nodo.valor;
+            
+            // Literales
+            if (tipo.equals("LITERAL_INT")) return "int";
+            if (tipo.equals("LITERAL_FLOAT")) return "float";
+            if (tipo.equals("LITERAL_BOOL")) return "bool";
+            if (tipo.equals("LITERAL_CHAR")) return "char";
+            if (tipo.equals("LITERAL_STRING")) return "string";
+            
+            // Identificadores
+            if (tipo.equals("IDENT")) {
+                String nombreVar = valor;
+                if (tablaVariablesLocales.containsKey(nombreVar)) {
+                    return tablaVariablesLocales.get(nombreVar);
+                }
+                if (tablaVariablesGlobales.containsKey(nombreVar)) {
+                    return tablaVariablesGlobales.get(nombreVar);
+                }
+                util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + nombreVar);
+                return "unknown";
+            }
+            
+            // Operaciones
+            if (tipo.equals("OPERACION")) {
+                return obtenerTipoOperacion(valor, nodo);
+            }
+            
+            // Acceso a arreglo
+            if (tipo.equals("ARRAY_ACCESS")) {
+                String nombreVar = valor;
+                if (tablaVariablesLocales.containsKey(nombreVar)) {
+                    return tablaVariablesLocales.get(nombreVar).replace("[]", "");
+                }
+                if (tablaVariablesGlobales.containsKey(nombreVar)) {
+                    return tablaVariablesGlobales.get(nombreVar).replace("[]", "");
+                }
+                return "unknown";
+            }
+            
+            // Llamada a función
+            if (tipo.equals("LLAMADA")) {
+                String nombreFunc = valor;
+                if (tablaFunciones.containsKey(nombreFunc)) {
+                    return tablaFunciones.get(nombreFunc);
+                }
+                util.ErrorHandler.agregarErrorSemantico("Función no declarada: " + nombreFunc);
+                return "unknown";
+            }
+            
+            return "unknown";
+        }
+        
+        /**
+         * Obtiene el tipo de resultado de una operación
+         */
+        private static String obtenerTipoOperacion(String operador, arbol nodo) {
+            if (operador == null || nodo.hijos.isEmpty()) return "unknown";
+            
+            // Operadores lógicos: siempre retornan bool
+            if (operador.equals("OR") || operador.equals("AND") || 
+                operador.equals("==") || operador.equals("!=") ||
+                operador.equals("<") || operador.equals("<=") ||
+                operador.equals(">") || operador.equals(">=")) {
+                return "bool";
+            }
+            
+            // Operadores unarios
+            if (operador.equals("NOT")) return "bool";
+            if (operador.equals("-") || operador.equals("++") || operador.equals("--")) {
+                return obtenerTipoExpresion(nodo.hijos.get(0));
+            }
+            
+            // Operadores binarios: retornan el tipo del operando izquierdo
+            if (nodo.hijos.size() >= 2) {
+                String tipoIzq = obtenerTipoExpresion(nodo.hijos.get(0));
+                String tipoDer = obtenerTipoExpresion(nodo.hijos.get(1));
+                
+                // Validar compatibilidad de tipos
+                validarCompatibilidadTipos(tipoIzq, tipoDer, operador);
+                
+                return tipoIzq;
+            }
+            
+            return "unknown";
+        }
+        
+        /**
+         * Valida compatibilidad de tipos en operaciones
+         */
+        public static void validarCompatibilidadTipos(String tipoIzq, String tipoDer, String operador) {
+            if (tipoIzq.equals("unknown") || tipoDer.equals("unknown")) return;
+            
+            // Operaciones aritméticas: int/float
+            if (operador.equals("+") || operador.equals("-") || operador.equals("*") || 
+                operador.equals("/") || operador.equals("//") || operador.equals("%") ||
+                operador.equals("^")) {
+                if (!(esNumerico(tipoIzq) && esNumerico(tipoDer))) {
+                    util.ErrorHandler.agregarErrorSemantico("Error de tipo: no puedes realizar " + operador + 
+                        " entre " + tipoIzq + " y " + tipoDer + ". Se requieren tipos numéricos.");
+                }
+                return;
+            }
+            
+            // Operadores lógicos: bool
+            if (operador.equals("AND") || operador.equals("OR")) {
+                if (!tipoIzq.equals("bool") || !tipoDer.equals("bool")) {
+                    util.ErrorHandler.agregarErrorSemantico("Error de tipo: operadores lógicos requieren bool, " +
+                        "pero se recibieron " + tipoIzq + " y " + tipoDer);
+                }
+                return;
+            }
+            
+            // Operadores relacionales: cualquier tipo comparable
+            if (operador.equals("<") || operador.equals("<=") || operador.equals(">") || operador.equals(">=")) {
+                if (!tipoIzq.equals(tipoDer)) {
+                    util.ErrorHandler.agregarErrorSemantico("Error de tipo: operadores relacionales requieren " +
+                        "tipos iguales en ambos operandos. Se recibieron " + tipoIzq + " y " + tipoDer);
+                }
+                return;
+            }
+            
+            // Igualdad/Desigualdad: cualquier tipo
+            if (operador.equals("==") || operador.equals("!=")) {
+                if (!tipoIzq.equals(tipoDer)) {
+                    util.ErrorHandler.agregarErrorSemantico("Advertencia: comparación entre tipos diferentes: " + 
+                        tipoIzq + " y " + tipoDer);
+                }
+            }
+        }
+        
+        /**
+         * Verifica si un tipo es numérico
+         */
+        private static boolean esNumerico(String tipo) {
+            return tipo.equals("int") || tipo.equals("float");
+        }
+        
+        /**
+         * Registra una variable global
+         */
+        public static void registrarVariableGlobal(String nombre, String tipo) {
+            if (tablaVariablesGlobales.containsKey(nombre)) {
+                util.ErrorHandler.agregarErrorSemantico("Variable global ya declarada: " + nombre);
+            } else {
+                tablaVariablesGlobales.put(nombre, tipo);
+            }
+        }
+        
+        /**
+         * Registra una variable local
+         */
+        public static void registrarVariableLocal(String nombre, String tipo) {
+            if (tablaVariablesLocales.containsKey(nombre)) {
+                util.ErrorHandler.agregarErrorSemantico("Variable local ya declarada: " + nombre);
+            } else {
+                tablaVariablesLocales.put(nombre, tipo);
+            }
+        }
+        
+        /**
+         * Registra una función
+         */
+        public static void registrarFuncion(String nombre, String tipoRetorno) {
+            if (tablaFunciones.containsKey(nombre)) {
+                util.ErrorHandler.agregarErrorSemantico("Función ya declarada: " + nombre);
+            } else {
+                tablaFunciones.put(nombre, tipoRetorno);
+            }
+        }
+        
+        /**
+         * Verifica que una variable esté declarada
+         */
+        public static boolean estaVariableDeclara(String nombre) {
+            return tablaVariablesGlobales.containsKey(nombre) || tablaVariablesLocales.containsKey(nombre);
+        }
+        
+        /**
+         * Verifica que una función esté declarada
+         */
+        public static boolean estaFuncionDeclarada(String nombre) {
+            return tablaFunciones.containsKey(nombre);
+        }
+        
+        /**
+         * Limpia las tablas para nueva compilación
+         */
+        public static void limpiar() {
+            tablaVariablesGlobales.clear();
+            tablaVariablesLocales.clear();
+            tablaFunciones.clear();
+        }
+    }
+:};
+
+start with program;
+
+/* =========================
    PRODUCCIONES
    ========================= */
 
@@ -76,6 +296,7 @@ program ::= lista_globales:lg lista_funciones:lf navidad_decl:nd
              if (lg != null) nodo.agregarHijo(lg);
              if (lf != null) nodo.agregarHijo(lf);
              nodo.agregarHijo(nd);
+             AnalizadorSemantico.limpiar();
              RESULT = nodo; :}
           ;
 
@@ -99,16 +320,24 @@ lista_globales ::= /* empty */
 decl_global ::= WORLD tipo_base:tb IDENT:id dims2d_opt ENDL
               {: arbol nodo = new arbol("DECL_GLOBAL", id.toString());
                  nodo.agregarHijo(tb);
+                 // ANÁLISIS SEMÁNTICO: Registrar variable global
+                 AnalizadorSemantico.registrarVariableGlobal(id.toString(), tb.valor);
                  RESULT = nodo; :}
               | WORLD tipo_base:tb IDENT:id dims2d_opt IGUAL expr:e ENDL
               {: arbol nodo = new arbol("DECL_GLOBAL", id.toString());
                  nodo.agregarHijo(tb);
                  nodo.agregarHijo(e);
+                 // ANÁLISIS SEMÁNTICO: Registrar variable global y validar tipo
+                 AnalizadorSemantico.registrarVariableGlobal(id.toString(), tb.valor);
+                 String tipoExpr = AnalizadorSemantico.obtenerTipoExpresion(e);
+                 AnalizadorSemantico.validarCompatibilidadTipos(tb.valor, tipoExpr, "=");
                  RESULT = nodo; :}
               | WORLD tipo_base:tb IDENT:id dims2d_opt IGUAL arr_init:ai ENDL
               {: arbol nodo = new arbol("DECL_GLOBAL", id.toString());
                  nodo.agregarHijo(tb);
                  nodo.agregarHijo(ai);
+                 // ANÁLISIS SEMÁNTICO: Registrar variable global como arreglo
+                 AnalizadorSemantico.registrarVariableGlobal(id.toString(), tb.valor + "[]");
                  RESULT = nodo; :}
               ;
 
@@ -126,6 +355,8 @@ funcion ::= GIFT tipo_base:tb IDENT:id PARENTizq params:p PARENder bloque_bloq:b
              nodo.agregarHijo(tb);
              if (p != null) nodo.agregarHijo(p);
              nodo.agregarHijo(bb);
+             // ANÁLISIS SEMÁNTICO: Registrar función con su tipo de retorno
+             AnalizadorSemantico.registrarFuncion(id.toString(), tb.valor);
              RESULT = nodo; :}
           ;
 
@@ -175,6 +406,19 @@ arr_access ::= IDENT:id CORCHizq expr:e1 CORCHder CORCHizq expr:e2 CORCHder
              {: arbol nodo = new arbol("ARRAY_ACCESS", id.toString());
                 nodo.agregarHijo(e1);
                 nodo.agregarHijo(e2);
+                // ANÁLISIS SEMÁNTICO: Validar que la variable esté declarada
+                if (!AnalizadorSemantico.estaVariableDeclara(id.toString())) {
+                   util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + id.toString());
+                }
+                // Validar que los índices sean enteros
+                String tipoIdx1 = AnalizadorSemantico.obtenerTipoExpresion(e1);
+                String tipoIdx2 = AnalizadorSemantico.obtenerTipoExpresion(e2);
+                if (!tipoIdx1.equals("int")) {
+                   util.ErrorHandler.agregarErrorSemantico("Índice de arreglo debe ser entero, se recibió " + tipoIdx1);
+                }
+                if (!tipoIdx2.equals("int")) {
+                   util.ErrorHandler.agregarErrorSemantico("Índice de arreglo debe ser entero, se recibió " + tipoIdx2);
+                }
                 RESULT = nodo; :}
              ;
 
@@ -258,16 +502,24 @@ stmt ::= decl_local:dl ENDL
 decl_local ::= LOCAL tipo_base:tb IDENT:id dims2d_opt
              {: arbol nodo = new arbol("DECL_LOCAL", id.toString());
                 nodo.agregarHijo(tb);
+                // ANÁLISIS SEMÁNTICO: Registrar variable local
+                AnalizadorSemantico.registrarVariableLocal(id.toString(), tb.valor);
                 RESULT = nodo; :}
              | LOCAL tipo_base:tb IDENT:id dims2d_opt IGUAL expr:e
              {: arbol nodo = new arbol("DECL_LOCAL", id.toString());
                 nodo.agregarHijo(tb);
                 nodo.agregarHijo(e);
+                // ANÁLISIS SEMÁNTICO: Registrar variable local y validar tipo
+                AnalizadorSemantico.registrarVariableLocal(id.toString(), tb.valor);
+                String tipoExpr = AnalizadorSemantico.obtenerTipoExpresion(e);
+                AnalizadorSemantico.validarCompatibilidadTipos(tb.valor, tipoExpr, "=");
                 RESULT = nodo; :}
              | LOCAL tipo_base:tb IDENT:id dims2d_opt IGUAL arr_init:ai
              {: arbol nodo = new arbol("DECL_LOCAL", id.toString());
                 nodo.agregarHijo(tb);
                 nodo.agregarHijo(ai);
+                // ANÁLISIS SEMÁNTICO: Registrar variable local como arreglo
+                AnalizadorSemantico.registrarVariableLocal(id.toString(), tb.valor + "[]");
                 RESULT = nodo; :}
              ;
 
@@ -275,11 +527,16 @@ decl_local ::= LOCAL tipo_base:tb IDENT:id dims2d_opt
 asignacion ::= IDENT:id IGUAL expr:e
              {: arbol nodo = new arbol("ASIGNACION", id.toString());
                 nodo.agregarHijo(e);
+                // ANÁLISIS SEMÁNTICO: Validar que la variable esté declarada
+                if (!AnalizadorSemantico.estaVariableDeclara(id.toString())) {
+                    util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + id.toString());
+                }
                 RESULT = nodo; :}
              | arr_access:aa IGUAL expr:e
              {: arbol nodo = new arbol("ASIGNACION_ARRAY");
                 nodo.agregarHijo(aa);
                 nodo.agregarHijo(e);
+                // ANÁLISIS SEMÁNTICO: Validación en arr_access
                 RESULT = nodo; :}
              ;
 
@@ -344,6 +601,10 @@ expr_or ::= expr_or:eo OR expr_and:ea
           {: arbol nodo = new arbol("OPERACION", "OR");
              nodo.agregarHijo(eo);
              nodo.agregarHijo(ea);
+             // ANÁLISIS SEMÁNTICO: Validar tipos bool
+             String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(eo);
+             String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ea);
+             AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "OR");
              RESULT = nodo; :}
           | expr_and:ea
           {: RESULT = ea; :}
@@ -353,6 +614,10 @@ expr_and ::= expr_and:ea AND expr_eq:ee
            {: arbol nodo = new arbol("OPERACION", "AND");
               nodo.agregarHijo(ea);
               nodo.agregarHijo(ee);
+              // ANÁLISIS SEMÁNTICO: Validar tipos bool
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(ea);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ee);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "AND");
               RESULT = nodo; :}
            | expr_eq:ee
            {: RESULT = ee; :}
@@ -362,11 +627,19 @@ expr_eq ::= expr_eq:ee EQ expr_rel:er
           {: arbol nodo = new arbol("OPERACION", "==");
              nodo.agregarHijo(ee);
              nodo.agregarHijo(er);
+             // ANÁLISIS SEMÁNTICO: Validar igualdad
+             String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(ee);
+             String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(er);
+             AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "==");
              RESULT = nodo; :}
           | expr_eq:ee NEQ expr_rel:er
           {: arbol nodo = new arbol("OPERACION", "!=");
              nodo.agregarHijo(ee);
              nodo.agregarHijo(er);
+             // ANÁLISIS SEMÁNTICO: Validar desigualdad
+             String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(ee);
+             String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(er);
+             AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "!=");
              RESULT = nodo; :}
           | expr_rel:er
           {: RESULT = er; :}
@@ -376,21 +649,37 @@ expr_rel ::= expr_suma:es1 LT expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", "<");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "<");
               RESULT = nodo; :}
            | expr_suma:es1 LE expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", "<=");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "<=");
               RESULT = nodo; :}
            | expr_suma:es1 GT expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", ">");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, ">");
               RESULT = nodo; :}
            | expr_suma:es1 GE expr_suma:es2
            {: arbol nodo = new arbol("OPERACION", ">=");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, ">=");
               RESULT = nodo; :}
            | expr_suma:es
            {: RESULT = es; :}
@@ -400,11 +689,19 @@ expr_suma ::= expr_suma:es SUMA expr_mult:em
             {: arbol nodo = new arbol("OPERACION", "+");
                nodo.agregarHijo(es);
                nodo.agregarHijo(em);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(em);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "+");
                RESULT = nodo; :}
             | expr_suma:es RESTA expr_mult:em
             {: arbol nodo = new arbol("OPERACION", "-");
                nodo.agregarHijo(es);
                nodo.agregarHijo(em);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(em);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "-");
                RESULT = nodo; :}
             | expr_mult:em
             {: RESULT = em; :}
@@ -414,21 +711,37 @@ expr_mult ::= expr_mult:em MULTIPLICACION expr_pot:ep
             {: arbol nodo = new arbol("OPERACION", "*");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "*");
                RESULT = nodo; :}
             | expr_mult:em DIVISION expr_pot:ep
             {: arbol nodo = new arbol("OPERACION", "/");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "/");
                RESULT = nodo; :}
             | expr_mult:em INTDIV expr_pot:ep
             {: arbol nodo = new arbol("OPERACION", "//");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "//");
                RESULT = nodo; :}
             | expr_mult:em MODULO expr_pot:ep
             {: arbol nodo = new arbol("OPERACION", "%");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos (int)
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "%");
                RESULT = nodo; :}
             | expr_pot:ep
             {: RESULT = ep; :}
@@ -438,6 +751,10 @@ expr_pot ::= expr_un:eu POTENCIA expr_pot:ep
            {: arbol nodo = new arbol("OPERACION", "^");
               nodo.agregarHijo(eu);
               nodo.agregarHijo(ep);
+              // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(eu);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "^");
               RESULT = nodo; :}
            | expr_un:eu
            {: RESULT = eu; :}
@@ -482,7 +799,12 @@ prim ::= INT_LIT:n
        | STRING_LIT:s
        {: RESULT = new arbol("LITERAL_STRING", s.toString()); :}
        | IDENT:id
-       {: RESULT = new arbol("IDENT", id.toString()); :}
+       {: arbol nodo = new arbol("IDENT", id.toString());
+          // ANÁLISIS SEMÁNTICO: Validar que la variable esté declarada
+          if (!AnalizadorSemantico.estaVariableDeclara(id.toString())) {
+             util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + id.toString());
+          }
+          RESULT = nodo; :}
        | arr_access:aa
        {: RESULT = aa; :}
        | llamada:ll
@@ -494,6 +816,10 @@ prim ::= INT_LIT:n
 llamada ::= IDENT:id PARENTizq args:a PARENder
           {: arbol nodo = new arbol("LLAMADA", id.toString());
              if (a != null) nodo.agregarHijo(a);
+             // ANÁLISIS SEMÁNTICO: Validar que la función esté declarada
+             if (!AnalizadorSemantico.estaFuncionDeclarada(id.toString())) {
+                util.ErrorHandler.agregarErrorSemantico("Función no declarada: " + id.toString());
+             }
              RESULT = nodo; :}
           ;
 

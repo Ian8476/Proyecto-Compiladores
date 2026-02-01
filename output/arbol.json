@@ -6,15 +6,21 @@
       "hijos": [
         {
           "tipo": "DECL_GLOBAL",
-          "valor": "numero",
+          "valor": "x",
           "hijos": [
             {
               "tipo": "TIPO",
               "valor": "int"
-            },
+            }
+          ]
+        },
+        {
+          "tipo": "DECL_GLOBAL",
+          "valor": "s",
+          "hijos": [
             {
-              "tipo": "LITERAL_INT",
-              "valor": "42"
+              "tipo": "TIPO",
+              "valor": "string"
             }
           ]
         }
@@ -32,33 +38,23 @@
               "hijos": [
                 {
                   "tipo": "DECL_LOCAL",
-                  "valor": "resultado",
+                  "valor": "c",
                   "hijos": [
                     {
                       "tipo": "TIPO",
                       "valor": "int"
                     },
                     {
-                      "tipo": "LITERAL_INT",
-                      "valor": "0"
-                    }
-                  ]
-                },
-                {
-                  "tipo": "ASIGNACION",
-                  "valor": "resultado",
-                  "hijos": [
-                    {
                       "tipo": "OPERACION",
                       "valor": "+",
                       "hijos": [
                         {
                           "tipo": "IDENT",
-                          "valor": "numero"
+                          "valor": "x"
                         },
                         {
-                          "tipo": "LITERAL_INT",
-                          "valor": "10"
+                          "tipo": "IDENT",
+                          "valor": "s"
                         }
                       ]
                     }

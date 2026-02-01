@@ -6,22 +6,33 @@
       "tipo": "GLOBAL",
       "simbolos": [
         {
-          "id": "numero",
+          "id": "x",
           "tipo_token": "IDENT",
-          "lexema": "numero",
-          "valor": "numero",
-          "linea": 3,
+          "lexema": "x",
+          "valor": "x",
+          "linea": 1,
           "columna": 11,
           "tipo_variable": "int",
           "es_arreglo": false,
-          "inicializado": true
+          "inicializado": false
         },
         {
-          "id": "resultado",
+          "id": "s",
           "tipo_token": "IDENT",
-          "lexema": "resultado",
-          "valor": "resultado",
-          "linea": 6,
+          "lexema": "s",
+          "valor": "s",
+          "linea": 2,
+          "columna": 14,
+          "tipo_variable": "string",
+          "es_arreglo": false,
+          "inicializado": false
+        },
+        {
+          "id": "c",
+          "tipo_token": "IDENT",
+          "lexema": "c",
+          "valor": "c",
+          "linea": 5,
           "columna": 13,
           "tipo_variable": "int",
           "es_arreglo": false,
@@ -30,6 +41,6 @@
       ]
     }
   ],
-  "total_tokens": 2,
+  "total_tokens": 3,
   "alcance_actual": "GLOBAL"
 }

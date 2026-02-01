@@ -1,0 +1,6 @@
+world int x endl
+world string s endl
+
+coal navidad ¿ ? ¡
+  local int c = x + s endl
+!
