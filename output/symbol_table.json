@@ -11,8 +11,8 @@
           "lexema": "resultado",
           "valor": "resultado",
           "linea": 3,
-          "columna": 11,
-          "tipo_variable": "int",
+          "columna": 14,
+          "tipo_variable": "string",
           "es_arreglo": false,
           "inicializado": true
         },

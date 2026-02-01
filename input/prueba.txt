@@ -1,6 +1,6 @@
 | Prueba: comparaciones binarias y ciclo for con i++
 
-world int resultado = 0 endl
+world string resultado = 2 endl
 world int limite = 5 endl
 
 coal navidad ¿ ? ¡

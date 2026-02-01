@@ -10,11 +10,11 @@
           "hijos": [
             {
               "tipo": "TIPO",
-              "valor": "int"
+              "valor": "string"
             },
             {
               "tipo": "LITERAL_INT",
-              "valor": "0"
+              "valor": "2"
             }
           ]
         },

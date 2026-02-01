@@ -1,8 +1,8 @@
 === REPORTE DE ERRORES ===
 Total errores léxicos: 0
 Total errores sintácticos: 0
-Total errores semánticos: 0
-Total errores: 0
+Total errores semánticos: 1
+Total errores: 1
 
 === LISTA DETALLADA ===
-No se encontraron errores.
+ERROR SEMÁNTICO (Línea 0, Columna 0): Error de asignación: no se puede asignar int a string en 'resultado' (línea 0)

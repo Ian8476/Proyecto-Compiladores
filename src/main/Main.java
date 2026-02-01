@@ -472,6 +472,15 @@ public class Main {
                 if (nodo.hijos.size() > 1) {
                     token.setInicializado(true);
                     System.out.println("  [SEMÁNTICA] Inicialización: " + nombre);
+                    // Validar compatibilidad de tipos entre la declaración y la expresión
+                    arbol expr = nodo.hijos.get(1);
+                    String tipoExpr = obtenerTipoExpresion(expr);
+                    String tipoDecl = token.getTipoVariable();
+                    if (!esAsignable(tipoDecl, tipoExpr)) {
+                        String msg = String.format("Error de asignación: no se puede asignar %s a %s en '%s' (línea %d)",
+                                tipoExpr, tipoDecl, nombre, nodo.linea);
+                        ErrorHandler.agregarErrorSemantico(msg, nodo.linea, nodo.columna);
+                    }
                 }
             }
         }
@@ -483,7 +492,7 @@ public class Main {
             
             if (token == null) {
                 System.err.println("  [ERROR] Variable no declarada: " + nombre + " (línea " + nodo.linea + ")");
-                ErrorHandler.agregarErrorSintactico("Variable no declarada: " + nombre, nodo.linea, 0);
+                ErrorHandler.agregarErrorSemantico("Variable no declarada: " + nombre + " (línea " + nodo.linea + ")", nodo.linea, 0);
             }
         }
         
@@ -491,6 +500,65 @@ public class Main {
         for (arbol hijo : nodo.hijos) {
             analizarSemantico(hijo);
         }
+    }
+
+    // Determina el tipo de una expresión simple del AST
+    private static String obtenerTipoExpresion(arbol nodo) {
+        if (nodo == null) return "unknown";
+        switch (nodo.tipo) {
+            case "LITERAL_INT": return "int";
+            case "LITERAL_FLOAT": return "float";
+            case "LITERAL_BOOL": return "bool";
+            case "LITERAL_CHAR": return "char";
+            case "LITERAL_STRING": return "string";
+            case "IDENT": {
+                String nombre = nodo.valor;
+                Token t = tablaSimbolos.buscar(nombre);
+                if (t != null && t.getTipoVariable() != null && !t.getTipoVariable().isEmpty()) {
+                    return t.getTipoVariable();
+                }
+                ErrorHandler.agregarErrorSemantico("Variable no declarada o sin tipo: " + nombre, nodo.linea, nodo.columna);
+                return "unknown";
+            }
+            case "OPERACION": {
+                if (nodo.hijos.size() == 0) return "unknown";
+                String op = nodo.valor != null ? nodo.valor : "";
+                // operadores lógicos/relacionales -> bool
+                if (op.equals("OR") || op.equals("AND") || op.equals("==") || op.equals("!=") ||
+                    op.equals("<") || op.equals("<=") || op.equals(">") || op.equals(">=") || op.equals("NOT")) {
+                    return "bool";
+                }
+                // unarios
+                if (op.equals("-") || op.equals("++") || op.equals("--")) {
+                    return obtenerTipoExpresion(nodo.hijos.get(0));
+                }
+                // binarios aritméticos: devolver tipo izquierdo (promover int->float if needed)
+                if (nodo.hijos.size() >= 2) {
+                    String izq = obtenerTipoExpresion(nodo.hijos.get(0));
+                    String der = obtenerTipoExpresion(nodo.hijos.get(1));
+                    if (izq.equals("float") || der.equals("float")) return "float";
+                    return izq;
+                }
+                return "unknown";
+            }
+            default:
+                return "unknown";
+        }
+    }
+
+    // Comprueba si un valor de tipo src puede asignarse a dest
+    private static boolean esAsignable(String dest, String src) {
+        if (dest == null || src == null) return false;
+        if (dest.equals(src)) return true;
+        // permitir int -> float
+        if (dest.equals("float") && src.equals("int")) return true;
+        // permitir asignar a arreglos solo si ambos son arreglos del mismo base
+        if (dest.endsWith("[]") && src.endsWith("[]")) {
+            String b1 = dest.replace("[]", "");
+            String b2 = src.replace("[]", "");
+            return b1.equals(b2);
+        }
+        return false;
     }
 
     /**

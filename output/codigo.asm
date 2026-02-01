@@ -10,7 +10,7 @@
         sw $ra, 0($sp)             # Guardar dirección de retorno
 
     # Declaración global: resultado
-    li $t0, 0          # Cargar literal: 0
+    li $t0, 2          # Cargar literal: 2
     # Fin inicialización de resultado
     # Declaración global: limite
     li $t0, 5          # Cargar literal: 5

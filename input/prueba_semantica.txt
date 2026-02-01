@@ -6,7 +6,7 @@ world char letra endl
 world string mensaje endl
 
 | Arreglo global de enteros
-world int arr ¿ 3 ? endl
+world int arr [1][2]  endl
 
 | Función con parámetros que retorna un valor
 gift int sumar ¿ int a , float b ? ¡
@@ -14,10 +14,6 @@ gift int sumar ¿ int a , float b ? ¡
   return resultado endl
 !
 
-| Función que no retorna valor (procedimiento)
-gift void procesar ¿ string texto ? ¡
-  show texto endl
-!
 
 coal navidad ¿ ? ¡
   | Variables locales
@@ -87,7 +83,7 @@ coal navidad ¿ ? ¡
   end loop endl
   
   | Estructura for
-  for ¿ local int i = 0 ; i < 10 ; ++ i ? ¡
+  for ¿ int i = 0 ENDL i < 10 ENDL ++ i ? ¡
     show i endl
   !
   
