@@ -1,6 +1,100 @@
+| Variables globales de diferentes tipos
 world int x endl
-world string s endl
+world float y endl
+world bool condicion endl
+world char letra endl
+world string mensaje endl
+
+| Arreglo global de enteros
+world int arr ¿ 3 ? endl
+
+| Función con parámetros que retorna un valor
+gift int sumar ¿ int a , float b ? ¡
+  local int resultado = a + b endl
+  return resultado endl
+!
+
+| Función que no retorna valor (procedimiento)
+gift void procesar ¿ string texto ? ¡
+  show texto endl
+!
 
 coal navidad ¿ ? ¡
-  local int c = x + s endl
+  | Variables locales
+  local int c = x + y endl
+  local string resultado = mensaje endl
+  local bool flag = condicion endl
+  
+  | Expresiones aritméticas binarias
+  local int suma = x + y endl
+  local int resta = x - y endl
+  local int mult = x * y endl
+  local int div = x // y endl
+  local float divFloat = x / y endl
+  local int mod = x % y endl
+  local int potencia = x ^ y endl
+  
+  | Expresiones aritméticas unarias
+  local int negativo = - x endl
+  local int incremento = ++ x endl
+  local int decremento = -- y endl
+  
+  | Expresiones relacionales
+  local bool menor = x < y endl
+  local bool menorIgual = x <= y endl
+  local bool mayor = x > y endl
+  local bool mayorIgual = x >= y endl
+  local bool igual = x == y endl
+  local bool diferente = x != y endl
+  
+  | Expresiones lógicas
+  local bool conjuncion = condicion @ flag endl
+  local bool disyuncion = condicion ~ flag endl
+  local bool negacion = Σ condicion endl
+  
+  | Llamadas a funciones
+  local int res = sumar ¿ x , y ? endl
+  procesar ¿ mensaje ? endl
+  
+  | Acceso a arreglos
+  local int elem = arr ¿ 0 ? endl
+  arr ¿ 1 ? = 42 endl
+  
+  | Lectura y escritura
+  get x endl
+  show x endl
+  show mensaje endl
+  
+  | Estructura decide of
+  decide of
+    ¿ x > 10 ? -> ¡
+      show "x es mayor a 10" endl
+    !
+    ¿ x == 5 ? -> ¡
+      show "x es igual a 5" endl
+    !
+    else -> ¡
+      show "x es otro valor" endl
+    !
+  end decide endl
+  
+  | Estructura loop
+  local int contador = 0 endl
+  loop
+    show contador endl
+    contador = contador + 1 endl
+    exit when contador > 5 endl
+  end loop endl
+  
+  | Estructura for
+  for ¿ local int i = 0 ; i < 10 ; ++ i ? ¡
+    show i endl
+  !
+  
+  | Expresiones complejas con paréntesis
+  local int complexa = ¿ x + y ? * 2 endl
+  local bool compleja_logica = ¿ x > 5 ? @ ¿ y < 20 ? endl
+  
+  | Return
+  return endl
 !

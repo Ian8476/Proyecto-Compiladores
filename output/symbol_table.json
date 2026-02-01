@@ -6,34 +6,67 @@
       "tipo": "GLOBAL",
       "simbolos": [
         {
-          "id": "x",
+          "id": "resultado",
           "tipo_token": "IDENT",
-          "lexema": "x",
-          "valor": "x",
-          "linea": 1,
+          "lexema": "resultado",
+          "valor": "resultado",
+          "linea": 3,
           "columna": 11,
           "tipo_variable": "int",
           "es_arreglo": false,
-          "inicializado": false
+          "inicializado": true
         },
         {
-          "id": "s",
+          "id": "limite",
           "tipo_token": "IDENT",
-          "lexema": "s",
-          "valor": "s",
-          "linea": 2,
-          "columna": 14,
-          "tipo_variable": "string",
+          "lexema": "limite",
+          "valor": "limite",
+          "linea": 4,
+          "columna": 11,
+          "tipo_variable": "int",
           "es_arreglo": false,
-          "inicializado": false
+          "inicializado": true
         },
         {
-          "id": "c",
+          "id": "i",
           "tipo_token": "IDENT",
-          "lexema": "c",
-          "valor": "c",
-          "linea": 5,
+          "lexema": "i",
+          "valor": "i",
+          "linea": 7,
           "columna": 13,
+          "tipo_variable": "int",
+          "es_arreglo": false,
+          "inicializado": true
+        },
+        {
+          "id": "exito",
+          "tipo_token": "IDENT",
+          "lexema": "exito",
+          "valor": "exito",
+          "linea": 17,
+          "columna": 17,
+          "tipo_variable": "int",
+          "es_arreglo": false,
+          "inicializado": true
+        },
+        {
+          "id": "incompleto",
+          "tipo_token": "IDENT",
+          "lexema": "incompleto",
+          "valor": "incompleto",
+          "linea": 20,
+          "columna": 17,
+          "tipo_variable": "int",
+          "es_arreglo": false,
+          "inicializado": true
+        },
+        {
+          "id": "otros",
+          "tipo_token": "IDENT",
+          "lexema": "otros",
+          "valor": "otros",
+          "linea": 23,
+          "columna": 17,
           "tipo_variable": "int",
           "es_arreglo": false,
           "inicializado": true
@@ -41,6 +74,6 @@
       ]
     }
   ],
-  "total_tokens": 3,
+  "total_tokens": 6,
   "alcance_actual": "GLOBAL"
 }
