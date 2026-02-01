@@ -31,12 +31,31 @@ public class Main {
         tablaSimbolos = new SymbolTable();
         System.out.println(" Tabla de símbolos inicializada\n");
 
-        // Determinar archivo de entrada
+        // Determinar archivo de entrada y archivo de salida
         String archivoEntrada = "input/prueba.txt";
+        String archivoSalidaMIPS = null;  // Se determinará del archivo de entrada
+        
         if (args.length > 0) {
             archivoEntrada = args[0];
-            System.out.println("Usando archivo de entrada: " + archivoEntrada + "\n");
+            System.out.println("Usando archivo de entrada: " + archivoEntrada);
+            
+            // Si se proporciona segundo argumento, usarlo como archivo de salida
+            if (args.length > 1) {
+                archivoSalidaMIPS = args[1];
+                System.out.println("Usando archivo de salida MIPS: " + archivoSalidaMIPS);
+            }
         }
+        
+        // Si no se especificó archivo de salida, derivarlo del archivo de entrada
+        if (archivoSalidaMIPS == null) {
+            archivoSalidaMIPS = archivoEntrada.replaceAll("\\.[^.]+$", ".asm");
+            if (archivoSalidaMIPS.equals(archivoEntrada)) {
+                archivoSalidaMIPS = archivoEntrada + ".asm";
+            }
+            System.out.println("Archivo de salida MIPS derivado: " + archivoSalidaMIPS);
+        }
+        
+        System.out.println();
 
         //Lectura del archivo de entrada
         Reader reader = new FileReader(archivoEntrada);
@@ -123,7 +142,7 @@ public class Main {
                         System.out.println("FASE 4: GENERACIÓN DE CÓDIGO MIPS");
                         System.out.println("═══════════════════════════════════════════════════════════\n");
                         
-                        generarCodigoMIPS(ast, outDir);
+                        generarCodigoMIPS(ast, outDir, archivoSalidaMIPS);
                         
                         // Guardar el árbol en el archivo de salida
                         w.newLine();
@@ -519,9 +538,11 @@ public class Main {
 
     /**
      * Genera código MIPS a partir del árbol sintáctico.
-     * Esta es una versión básica para demostración.
+     * @param ast El árbol sintáctico a compilar
+     * @param outDir Directorio de salida para archivos de diagnóstico
+     * @param archivoSalidaMIPS Ruta del archivo de salida MIPS
      */
-    private static void generarCodigoMIPS(arbol ast, java.io.File outDir) {
+    private static void generarCodigoMIPS(arbol ast, java.io.File outDir, String archivoSalidaMIPS) {
         try {
             System.out.println("  Iniciando generación de código MIPS...\n");
             
@@ -531,14 +552,13 @@ public class Main {
             // Generar código a partir del AST
             generador.generarCodigo(ast);
             
-            // Guardar el código MIPS en un archivo
-            String rutaMIPS = new java.io.File(outDir, "codigo.asm").getAbsolutePath();
-            generador.guardarCodigo(rutaMIPS);
+            // Guardar el código MIPS en el archivo especificado
+            generador.guardarCodigo(archivoSalidaMIPS);
             
             // Mostrar resumen
             System.out.println("\n  ═══════════════════════════════════════════════════════════");
             System.out.println("  Código MIPS generado exitosamente");
-            System.out.println("  Archivo: output/codigo.asm");
+            System.out.println("  Archivo: " + archivoSalidaMIPS);
             System.out.println("  ═══════════════════════════════════════════════════════════");
             
         } catch (Exception e) {
