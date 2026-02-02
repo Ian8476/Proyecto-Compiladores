@@ -5,25 +5,34 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Generador de código MIPS básico.
- * Realiza un análisis semántico simple y genera código MIPS de ejemplo.
- * Esta es una versión MUY básica para demostración.
+ * Generador de código MIPS mejorado.
+ * Realiza análisis semántico y genera código MIPS con manejo de:
+ * - Variables globales y locales
+ * - Funciones y calls
+ * - Operaciones aritméticas y lógicas
+ * - Arreglos bidimensionales
+ * - Estructuras de control (decide, loop, for)
  * 
  * @author Duan Antonio Espinoza
- * @version 0.1
+ * @version 0.2
  */
 public class CodeGenerator {
     private StringBuilder codigo;
+    private StringBuilder datosGlobales;        // Sección .data
     private int registroContador = 1;           // Contador para registros temporales
     private Stack<Integer> registrosDisponibles; // Pila de registros disponibles
     private int labelContador = 0;              // Contador para labels
     private SymbolTable tablaSimbolos;
     private int offsetMemoria = 0;              // Offset para variables en la pila
+    private Map<String, Integer> offsetVariables; // Mapeo variable -> offset en stack
+    private int profundidadBloque = 0;          // Para manejo de variables locales
     
     public CodeGenerator(SymbolTable tablaSimbolos) {
         this.codigo = new StringBuilder();
+        this.datosGlobales = new StringBuilder();
         this.tablaSimbolos = tablaSimbolos;
         this.registrosDisponibles = new Stack<>();
+        this.offsetVariables = new HashMap<>();
         inicializarRegistros();
         generarPrologo();
     }
@@ -41,16 +50,22 @@ public class CodeGenerator {
      * Genera el prólogo del programa MIPS
      */
     private void generarPrologo() {
-        emitir(".data");
-        emitir("    # Sección de datos - variables globales irían aquí");
-        emitir("    newline: .asciiz \"\\n\"");
-        emitir("");
+        // Sección de datos
+        datosGlobales.append(".data\n");
+        datosGlobales.append("    # Sección de datos - variables globales\n");
+        datosGlobales.append("    newline: .asciiz \"\\n\"\n");
+        datosGlobales.append("    space: .asciiz \" \"\n");
+        datosGlobales.append("    prompt_write: .asciiz \"Valor: \"\n");
+        
+        // Sección de código
         emitir(".text");
         emitir("    .globl main");
         emitir("    main:");
         emitir("        # Prólogo: guardar registros y ajustar stack pointer");
-        emitir("        addi $sp, $sp, -4          # Reservar espacio en la pila");
-        emitir("        sw $ra, 0($sp)             # Guardar dirección de retorno");
+        emitir("        addi $sp, $sp, -8          # Reservar espacio en la pila");
+        emitir("        sw $ra, 4($sp)             # Guardar dirección de retorno");
+        emitir("        sw $fp, 0($sp)             # Guardar frame pointer");
+        emitir("        addi $fp, $sp, 8           # Establecer nuevo frame pointer");
         emitir("");
     }
     
@@ -60,8 +75,9 @@ public class CodeGenerator {
     private void generarEpilogo() {
         emitir("");
         emitir("        # Epílogo: restaurar registros y retornar");
-        emitir("        lw $ra, 0($sp)             # Restaurar dirección de retorno");
-        emitir("        addi $sp, $sp, 4           # Liberar espacio en la pila");
+        emitir("        lw $ra, 4($sp)             # Restaurar dirección de retorno");
+        emitir("        lw $fp, 0($sp)             # Restaurar frame pointer");
+        emitir("        addi $sp, $sp, 8           # Liberar espacio en la pila");
         emitir("        jr $ra                     # Retornar al sistema operativo");
         emitir("");
         emitir("    # Fin del programa");
@@ -79,23 +95,71 @@ public class CodeGenerator {
             case "PROGRAM":
                 generarProgram(nodo);
                 break;
+            case "GLOBALES":
+                generarGlobales(nodo);
+                break;
             case "DECL_GLOBAL":
                 generarDeclGlobal(nodo);
+                break;
+            case "FUNCIONES":
+                generarFunciones(nodo);
+                break;
+            case "FUNCION":
+                generarFuncion(nodo);
                 break;
             case "MAIN":
                 generarMain(nodo);
                 break;
-            case "OPERACION":
-                generarOperacion(nodo);
+            case "BLOQUE":
+                generarBloque(nodo);
+                break;
+            case "SENTENCIAS":
+                generarSentencias(nodo);
+                break;
+            case "DECL_LOCAL":
+                generarDeclLocal(nodo);
                 break;
             case "ASIGNACION":
                 generarAsignacion(nodo);
                 break;
+            case "ASIGNACION_ARRAY":
+                generarAsignacionArray(nodo);
+                break;
+            case "OPERACION":
+                generarOperacion(nodo);
+                break;
             case "LITERAL_INT":
                 generarLiteralInt(nodo);
                 break;
+            case "LITERAL_FLOAT":
+                generarLiteralFloat(nodo);
+                break;
+            case "LITERAL_BOOL":
+                generarLiteralBool(nodo);
+                break;
             case "IDENT":
                 generarIdent(nodo);
+                break;
+            case "LLAMADA":
+                generarLlamada(nodo);
+                break;
+            case "ARRAY_ACCESS":
+                generarArrayAccess(nodo);
+                break;
+            case "DECIDE":
+                generarDecide(nodo);
+                break;
+            case "LOOP":
+                generarLoop(nodo);
+                break;
+            case "FOR":
+                generarFor(nodo);
+                break;
+            case "RETURN":
+                generarReturn(nodo);
+                break;
+            case "BREAK":
+                emitir("    j " + generarLabel());
                 break;
             default:
                 // Para otros nodos, procesamos recursivamente
@@ -234,26 +298,7 @@ public class CodeGenerator {
     }
     
     /**
-     * Genera código para asignaciones
-     */
-    private void generarAsignacion(arbol nodo) {
-        String variable = nodo.valor;
-        System.out.println("  [SEMÁNTICA] Asignación a: " + variable);
-        
-        if (nodo.hijos.size() > 0) {
-            arbol expresion = nodo.hijos.get(0);
-            System.out.println("    - Expresión: " + expresion.tipo);
-            
-            emitir("    # Asignación: " + variable + " = ...");
-            generarCodigo(expresion);
-            emitir("    # Resultado en $t0, guardando en variable: " + variable);
-            offsetMemoria += 4;
-            emitir("    sw $t0, " + (-offsetMemoria) + "($sp)   # Guardar valor de " + variable);
-        }
-    }
-    
-    /**
-     * Genera código para literales enteros
+     * Genera literales enteros
      */
     private void generarLiteralInt(arbol nodo) {
         String valor = nodo.valor;
@@ -308,10 +353,10 @@ public class CodeGenerator {
     }
     
     /**
-     * Obtiene el código MIPS generado
+     * Obtiene el código MIPS generado (combinando datos y código)
      */
     public String obtenerCodigo() {
-        return codigo.toString();
+        return datosGlobales.toString() + "\n" + codigo.toString();
     }
     
     /**
@@ -322,5 +367,288 @@ public class CodeGenerator {
             writer.write(obtenerCodigo());
             System.out.println("\n  Código MIPS guardado en: " + rutaArchivo);
         }
+    }
+    
+    // ===== MÉTODOS PARA MANEJO DE GLOBALES =====
+    
+    /**
+     * código para el bloque de globales
+     */
+    private void generarGlobales(arbol nodo) {
+        System.out.println("  [GENERACIÓN] Analizando declaraciones globales");
+        for (arbol hijo : nodo.hijos) {
+            generarCodigo(hijo);
+        }
+    }
+    
+    // ===== MÉTODOS PARA MANEJO DE FUNCIONES =====
+    
+    /**
+     *  código para el bloque de funciones
+     */
+    private void generarFunciones(arbol nodo) {
+        System.out.println("  [GENERACIÓN] Analizando funciones definidas");
+        for (arbol hijo : nodo.hijos) {
+            generarCodigo(hijo);
+        }
+    }
+    
+    /**
+     * código para una función individual
+     */
+    private void generarFuncion(arbol nodo) {
+        String nombreFunc = nodo.valor;
+        System.out.println("  [GENERACIÓN] Función: " + nombreFunc);
+        
+        emitir("");
+        emitir("    # Función: " + nombreFunc);
+        emitir("    " + nombreFunc + ":");
+        emitir("        addi $sp, $sp, -4");
+        emitir("        sw $ra, 0($sp)");
+        
+        // Procesar bloque de función
+        for (arbol hijo : nodo.hijos) {
+            if (hijo.tipo.equals("BLOQUE")) {
+                generarCodigo(hijo);
+            }
+        }
+        
+        emitir("        # Retorno de función");
+        emitir("        lw $ra, 0($sp)");
+        emitir("        addi $sp, $sp, 4");
+        emitir("        jr $ra");
+    }
+    
+    /**
+     * código para bloques de código
+     */
+    private void generarBloque(arbol nodo) {
+        System.out.println("  [GENERACIÓN] Abriendo bloque");
+        profundidadBloque++;
+        
+        for (arbol hijo : nodo.hijos) {
+            generarCodigo(hijo);
+        }
+        
+        profundidadBloque--;
+    }
+    
+    /**
+     * código para lista de sentencias
+     */
+    private void generarSentencias(arbol nodo) {
+        for (arbol hijo : nodo.hijos) {
+            generarCodigo(hijo);
+        }
+    }
+    
+    /**
+     *  código para declaraciones locales
+     */
+    private void generarDeclLocal(arbol nodo) {
+        String nomVariable = nodo.valor;
+        System.out.println("  [SEMÁNTICA] Declaración local: " + nomVariable);
+        
+        // Registrar offset de variable local
+        offsetVariables.put(nomVariable, offsetMemoria);
+        offsetMemoria += 4;
+        
+        emitir("    # Declaración local: " + nomVariable);
+        
+        if (nodo.hijos.size() > 1) {
+            // Tiene inicialización
+            arbol inicializacion = nodo.hijos.get(1);
+            System.out.println("    - Con inicialización");
+            generarCodigo(inicializacion);
+            emitir("    sw $t0, " + (-offsetVariables.get(nomVariable)) + "($fp)");
+        }
+    }
+    
+    /**
+     *  código para asignaciones mejorado
+     */
+    private void generarAsignacion(arbol nodo) {
+        String variable = nodo.valor;
+        System.out.println("  [SEMÁNTICA] Asignación a: " + variable);
+        
+        if (nodo.hijos.size() > 0) {
+            arbol expresion = nodo.hijos.get(0);
+            System.out.println("    - Expresión: " + expresion.tipo);
+            
+            emitir("    # Asignación: " + variable + " = ...");
+            generarCodigo(expresion);
+            
+            if (offsetVariables.containsKey(variable)) {
+                // Variable local
+                emitir("    sw $t0, " + (-offsetVariables.get(variable)) + "($fp)   # Guardar " + variable);
+            } else {
+                // Variable global
+                emitir("    sw $t0, -4($gp)            # Guardar variable global: " + variable);
+            }
+        }
+    }
+    
+    /**
+     *  código para asignaciones de arreglos
+     */
+    private void generarAsignacionArray(arbol nodo) {
+        System.out.println("  [SEMÁNTICA] Asignación a arreglo");
+        emitir("    # Asignación a arreglo");
+        // Procesar los hijos recursivamente
+        for (arbol hijo : nodo.hijos) {
+            generarCodigo(hijo);
+        }
+    }
+    
+    /**
+     *  código para literales flotantes
+     */
+    private void generarLiteralFloat(arbol nodo) {
+        String valor = nodo.valor;
+        System.out.println("  [SEMÁNTICA] Literal FLOAT: " + valor);
+        emitir("    li.s $f0, " + valor + "        # Cargar literal float: " + valor);
+    }
+    
+    /**
+     *  código para literales booleanos
+     */
+    private void generarLiteralBool(arbol nodo) {
+        String valor = nodo.valor;
+        System.out.println("  [SEMÁNTICA] Literal BOOL: " + valor);
+        int valorInt = valor.equalsIgnoreCase("true") ? 1 : 0;
+        emitir("    li $t0, " + valorInt + "          # Cargar literal bool: " + valor);
+    }
+    
+    /**
+     *  código para llamadas a función
+     */
+    private void generarLlamada(arbol nodo) {
+        String nombreFunc = nodo.valor;
+        System.out.println("  [SEMÁNTICA] Llamada a función: " + nombreFunc);
+        
+        emitir("    # Llamada a función: " + nombreFunc);
+        emitir("    jal " + nombreFunc);
+        emitir("    # Valor retornado en $v0");
+    }
+    
+    /**
+     *  código para acceso a arreglos
+     */
+    private void generarArrayAccess(arbol nodo) {
+        String nombreArr = nodo.valor;
+        System.out.println("  [SEMÁNTICA] Acceso a arreglo: " + nombreArr);
+        
+        emitir("    # Acceso a arreglo: " + nombreArr);
+        // Procesar índices
+        for (arbol hijo : nodo.hijos) {
+            generarCodigo(hijo);
+        }
+        emitir("    # Índices en $t0 y $t1");
+    }
+    
+    /**
+     *  código para decide (switch)
+     */
+    private void generarDecide(arbol nodo) {
+        String labelSalida = generarLabel();
+        System.out.println("  [GENERACIÓN] DECIDE - label salida: " + labelSalida);
+        
+        emitir("    # Estructura DECIDE");
+        for (arbol hijo : nodo.hijos) {
+            if (hijo.tipo.equals("CASOS")) {
+                generarCasos(hijo, labelSalida);
+            } else if (hijo.tipo.equals("ELSE")) {
+                generarCodigo(hijo.hijos.get(0));
+            }
+        }
+        
+        emitir("    " + labelSalida + ":");
+    }
+    
+    /**
+     *  código para casos del decide
+     */
+    private void generarCasos(arbol nodo, String labelSalida) {
+        for (arbol caso : nodo.hijos) {
+            if (caso.tipo.equals("CASO")) {
+                String labelSiguiente = generarLabel();
+                emitir("    # Caso");
+                generarCodigo(caso.hijos.get(0));  // condición
+                emitir("    beq $t0, $zero, " + labelSiguiente);
+                generarCodigo(caso.hijos.get(1));  // bloque
+                emitir("    j " + labelSalida);
+                emitir("    " + labelSiguiente + ":");
+            }
+        }
+    }
+    
+    /**
+     *  código para loop
+     */
+    private void generarLoop(arbol nodo) {
+        String labelInicio = generarLabel();
+        String labelSalida = generarLabel();
+        
+        System.out.println("  [GENERACIÓN] LOOP");
+        emitir("    " + labelInicio + ":");
+        emitir("    # Cuerpo del loop");
+        
+        for (arbol hijo : nodo.hijos) {
+            if (hijo.tipo.equals("SENTENCIAS")) {
+                generarCodigo(hijo);
+            } else if (hijo.tipo.equals("EXIT")) {
+                emitir("    # Condición de salida");
+                generarCodigo(hijo.hijos.get(0));
+                emitir("    bne $t0, $zero, " + labelSalida);
+            }
+        }
+        
+        emitir("    j " + labelInicio);
+        emitir("    " + labelSalida + ":");
+    }
+    
+    /**
+     *  código para for
+     */
+    private void generarFor(arbol nodo) {
+        String labelInicio = generarLabel();
+        String labelSalida = generarLabel();
+        
+        System.out.println("  [GENERACIÓN] FOR");
+        
+        // Inicialización
+        generarCodigo(nodo.hijos.get(0));
+        
+        emitir("    " + labelInicio + ":");
+        
+        // Condición
+        generarCodigo(nodo.hijos.get(1));
+        emitir("    beq $t0, $zero, " + labelSalida);
+        
+        // Bloque
+        generarCodigo(nodo.hijos.get(3));
+        
+        // Incremento
+        generarCodigo(nodo.hijos.get(2));
+        
+        emitir("    j " + labelInicio);
+        emitir("    " + labelSalida + ":");
+    }
+    
+    /**
+     *  código para return
+     */
+    private void generarReturn(arbol nodo) {
+        System.out.println("  [GENERACIÓN] RETURN");
+        
+        if (nodo.hijos.size() > 0) {
+            generarCodigo(nodo.hijos.get(0));
+            emitir("    move $v0, $t0             # Mover resultado a $v0");
+        }
+        
+        emitir("    # Retorno de función");
+        emitir("    lw $ra, 0($sp)");
+        emitir("    addi $sp, $sp, 4");
+        emitir("    jr $ra");
     }
 }
