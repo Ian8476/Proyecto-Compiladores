@@ -1,9 +1,17 @@
 === REPORTE DE ERRORES ===
 Total errores léxicos: 0
 Total errores sintácticos: 0
-Total errores semánticos: 2
-Total errores: 2
+Total errores semánticos: 10
+Total errores: 10
 
 === LISTA DETALLADA ===
 ERROR SEMÁNTICO: Variable no declarada: a
+ERROR SEMÁNTICO: Variable no declarada: b
 ERROR SEMÁNTICO: Variable no declarada: a
+ERROR SEMÁNTICO: Variable no declarada: b
+ERROR SEMÁNTICO: Variable no declarada: a
+ERROR SEMÁNTICO: Variable no declarada: b
+ERROR SEMÁNTICO: Variable no declarada: x
+ERROR SEMÁNTICO: Variable no declarada: y
+ERROR SEMÁNTICO: Variable no declarada: x
+ERROR SEMÁNTICO: Variable no declarada: y

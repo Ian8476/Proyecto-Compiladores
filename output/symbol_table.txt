@@ -6,26 +6,40 @@
 ╔════════════════════════════════════╗
 ║ TABLA: GLOBAL (Nivel 0 - GLOBAL)
 ╠════════════════════════════════════╣
-║ resultado : IDENT (línea 3)
-║ limite : IDENT (línea 4)
-║ i : IDENT (línea 7)
-║ exito : IDENT (línea 17)
-║ incompleto : IDENT (línea 20)
-║ otros : IDENT (línea 23)
+║ globalNum : IDENT (línea 3)
+║ globalPi : IDENT (línea 4)
+║ flag : IDENT (línea 5)
+║ matriz : IDENT (línea 6)
+║ a : IDENT (línea 16)
+║ b : IDENT (línea 17)
+║ cond : IDENT (línea 18)
+║ potencia : IDENT (línea 25)
+║ temp : IDENT (línea 34)
+║ j : IDENT (línea 38)
+║ neg : IDENT (línea 46)
+║ caso1 : IDENT (línea 51)
+║ caso2 : IDENT (línea 54)
 ╚════════════════════════════════════╝
 
 ═════════════════════════════════════════════════════════════
                     HISTORIAL DE OPERACIONES
 ═════════════════════════════════════════════════════════════
-1. AGREGAR: resultado en GLOBAL
-2. AGREGAR: limite en GLOBAL
-3. AGREGAR: i en GLOBAL
-4. AGREGAR: exito en GLOBAL
-5. AGREGAR: incompleto en GLOBAL
-6. AGREGAR: otros en GLOBAL
+1. AGREGAR: globalNum en GLOBAL
+2. AGREGAR: globalPi en GLOBAL
+3. AGREGAR: flag en GLOBAL
+4. AGREGAR: matriz en GLOBAL
+5. AGREGAR: a en GLOBAL
+6. AGREGAR: b en GLOBAL
+7. AGREGAR: cond en GLOBAL
+8. AGREGAR: potencia en GLOBAL
+9. AGREGAR: temp en GLOBAL
+10. AGREGAR: j en GLOBAL
+11. AGREGAR: neg en GLOBAL
+12. AGREGAR: caso1 en GLOBAL
+13. AGREGAR: caso2 en GLOBAL
 
 ═════════════════════════════════════════════════════════════
-Total de tokens registrados: 6
+Total de tokens registrados: 13
 Total de tablas: 1
 Alcance actual: GLOBAL
 ═════════════════════════════════════════════════════════════

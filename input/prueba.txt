@@ -1,26 +1,61 @@
-| Prueba: comparaciones binarias y ciclo for con i++
+| Prueba semántica básica
 
-world int resultado = 2 endl
-world int limite = 5 endl
+world int globalNum = 10 endl
+world float globalPi = 3.14 endl
+world bool flag = true endl
+world int matriz[2][2] endl
+
+
+
+
+
+
+
 
 coal navidad ¿ ? ¡
-  local int i = 0 endl
-  
-  | Ciclo for: inicialización, condición binaria, incremento
-  for ¿ i = 0 endl i < 10 endl i++ ? ¡
-    resultado = resultado + 1 endl
+  local int a = 5 endl
+  local float b = 2.5 endl
+  local bool cond = false endl
+
+
+
+  | Operaciones básicas
+  a = a + 3 endl
+  b = b / 2.0 endl
+  local int potencia = 2 ^ 3 endl
+
+  | Unarias
+  ++ a endl
+  b -- endl
+
+
+  | Ciclo for
+  for ¿ a = 0 endl a < 5 endl a++ ? ¡
+    local int temp = a * 2 endl
   !
-  
-  | Decisión con comparación binaria
+
+  | Loop
+  local int j = 0 endl
+  loop
+    j = j + 1 endl
+    exit when j >= 3 endl
+  end loop endl
+
+  | Lógica
+  cond = ¿ a > 3 ? @ ¿ b < 4.0 ? endl
+  local bool neg = Σcond endl
+
+  | Decide
   decide of
-    ¿ resultado == 10 ? -> ¡
-      local int exito = 1 endl
-    !
-    ¿ resultado < 5 ? -> ¡
-      local int incompleto = 1 endl
+    ¿ a == 5 ? -> ¡
+      local int caso1 = 1 endl
     !
     else -> ¡
-      local int otros = 0 endl
+      local int caso2 = 2 endl
     !
   end decide endl
+
+
+
+  return 0 endl
 !
