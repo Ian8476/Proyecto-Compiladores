@@ -10,7 +10,7 @@
           "hijos": [
             {
               "tipo": "TIPO",
-              "valor": "string"
+              "valor": "int"
             },
             {
               "tipo": "LITERAL_INT",

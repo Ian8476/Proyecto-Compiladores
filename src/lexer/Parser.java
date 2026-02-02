@@ -7,6 +7,9 @@ package lexer;
 
 import java_cup.runtime.Symbol;
 import arbolSintactico.arbol;
+import java.util.HashMap;
+import java.util.Map;
+import util.AnalizadorSemantico;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20150326 (SVN rev 63) generated parser.
@@ -612,6 +615,7 @@ class CUP$Parser$actions {
              if (lg != null) nodo.agregarHijo(lg);
              if (lf != null) nodo.agregarHijo(lf);
              nodo.agregarHijo(nd);
+             AnalizadorSemantico.limpiar();
              RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("program",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -668,6 +672,8 @@ class CUP$Parser$actions {
 		Object id = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		 arbol nodo = new arbol("DECL_GLOBAL", id.toString());
                  nodo.agregarHijo(tb);
+                 // ANÁLISIS SEMÁNTICO: Registrar variable global
+                 AnalizadorSemantico.registrarVariableGlobal(id.toString(), tb.valor);
                  RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_global",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -689,6 +695,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("DECL_GLOBAL", id.toString());
                  nodo.agregarHijo(tb);
                  nodo.agregarHijo(e);
+                 // ANÁLISIS SEMÁNTICO: Registrar variable global y validar tipo
+                 AnalizadorSemantico.registrarVariableGlobal(id.toString(), tb.valor);
+                 String tipoExpr = AnalizadorSemantico.obtenerTipoExpresion(e);
+                 AnalizadorSemantico.validarCompatibilidadTipos(tb.valor, tipoExpr, "=");
                  RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_global",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -710,6 +720,8 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("DECL_GLOBAL", id.toString());
                  nodo.agregarHijo(tb);
                  nodo.agregarHijo(ai);
+                 // ANÁLISIS SEMÁNTICO: Registrar variable global como arreglo
+                 AnalizadorSemantico.registrarVariableGlobal(id.toString(), tb.valor + "[]");
                  RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_global",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -761,6 +773,8 @@ class CUP$Parser$actions {
              nodo.agregarHijo(tb);
              if (p != null) nodo.agregarHijo(p);
              nodo.agregarHijo(bb);
+             // ANÁLISIS SEMÁNTICO: Registrar función con su tipo de retorno
+             AnalizadorSemantico.registrarFuncion(id.toString(), tb.valor);
              RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("funcion",4, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -927,6 +941,19 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("ARRAY_ACCESS", id.toString());
                 nodo.agregarHijo(e1);
                 nodo.agregarHijo(e2);
+                // ANÁLISIS SEMÁNTICO: Validar que la variable esté declarada
+                if (!AnalizadorSemantico.estaVariableDeclara(id.toString())) {
+                   util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + id.toString());
+                }
+                // Validar que los índices sean enteros
+                String tipoIdx1 = AnalizadorSemantico.obtenerTipoExpresion(e1);
+                String tipoIdx2 = AnalizadorSemantico.obtenerTipoExpresion(e2);
+                if (!tipoIdx1.equals("int")) {
+                   util.ErrorHandler.agregarErrorSemantico("Índice de arreglo debe ser entero, se recibió " + tipoIdx1);
+                }
+                if (!tipoIdx2.equals("int")) {
+                   util.ErrorHandler.agregarErrorSemantico("Índice de arreglo debe ser entero, se recibió " + tipoIdx2);
+                }
                 RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("arr_access",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1194,6 +1221,8 @@ class CUP$Parser$actions {
 		Object id = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		 arbol nodo = new arbol("DECL_LOCAL", id.toString());
                 nodo.agregarHijo(tb);
+                // ANÁLISIS SEMÁNTICO: Registrar variable local
+                AnalizadorSemantico.registrarVariableLocal(id.toString(), tb.valor);
                 RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_local",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1215,6 +1244,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("DECL_LOCAL", id.toString());
                 nodo.agregarHijo(tb);
                 nodo.agregarHijo(e);
+                // ANÁLISIS SEMÁNTICO: Registrar variable local y validar tipo
+                AnalizadorSemantico.registrarVariableLocal(id.toString(), tb.valor);
+                String tipoExpr = AnalizadorSemantico.obtenerTipoExpresion(e);
+                AnalizadorSemantico.validarCompatibilidadTipos(tb.valor, tipoExpr, "=");
                 RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_local",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1236,6 +1269,8 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("DECL_LOCAL", id.toString());
                 nodo.agregarHijo(tb);
                 nodo.agregarHijo(ai);
+                // ANÁLISIS SEMÁNTICO: Registrar variable local como arreglo
+                AnalizadorSemantico.registrarVariableLocal(id.toString(), tb.valor + "[]");
                 RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_local",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1253,7 +1288,16 @@ class CUP$Parser$actions {
 		arbol e = (arbol)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 arbol nodo = new arbol("ASIGNACION", id.toString());
                 nodo.agregarHijo(e);
-                RESULT = nodo; 
+                // ANÁLISIS SEMÁNTICO: Validar que la variable esté declarada
+                if (!AnalizadorSemantico.estaVariableDeclara(id.toString())) {
+                    util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + id.toString());
+                }
+            else {
+               String tipoVar = AnalizadorSemantico.obtenerTipoVariable(id.toString());
+               String tipoExpr = AnalizadorSemantico.obtenerTipoExpresion(e);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoVar, tipoExpr, "=");
+            }
+            RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1271,7 +1315,21 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("ASIGNACION_ARRAY");
                 nodo.agregarHijo(aa);
                 nodo.agregarHijo(e);
-                RESULT = nodo; 
+                // ANÁLISIS SEMÁNTICO: Validación en arr_access
+            // Validar tipo del elemento del arreglo
+            if (aa != null && aa.valor != null) {
+               String nombreVar = aa.valor;
+               String tipoVar = AnalizadorSemantico.obtenerTipoVariable(nombreVar);
+               if (tipoVar == null) {
+                  util.ErrorHandler.agregarErrorSemantico("Variable de arreglo no declarada: " + nombreVar);
+               } else {
+                  // tipoVar esperado: e.g., "int[]"
+                  String base = tipoVar.endsWith("[]") ? tipoVar.replace("[]", "") : tipoVar;
+                  String tipoExpr = AnalizadorSemantico.obtenerTipoExpresion(e);
+                  AnalizadorSemantico.validarCompatibilidadTipos(base, tipoExpr, "=");
+               }
+            }
+            RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1403,6 +1461,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "OR");
              nodo.agregarHijo(eo);
              nodo.agregarHijo(ea);
+             // ANÁLISIS SEMÁNTICO: Validar tipos bool
+             String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(eo);
+             String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ea);
+             AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "OR");
              RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_or",16, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1433,6 +1495,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "AND");
               nodo.agregarHijo(ea);
               nodo.agregarHijo(ee);
+              // ANÁLISIS SEMÁNTICO: Validar tipos bool
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(ea);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ee);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "AND");
               RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_and",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1463,6 +1529,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "==");
              nodo.agregarHijo(ee);
              nodo.agregarHijo(er);
+             // ANÁLISIS SEMÁNTICO: Validar igualdad
+             String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(ee);
+             String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(er);
+             AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "==");
              RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_eq",18, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1481,6 +1551,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "!=");
              nodo.agregarHijo(ee);
              nodo.agregarHijo(er);
+             // ANÁLISIS SEMÁNTICO: Validar desigualdad
+             String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(ee);
+             String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(er);
+             AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "!=");
              RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_eq",18, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1511,6 +1585,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "<");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "<");
               RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_rel",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1529,6 +1607,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "<=");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "<=");
               RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_rel",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1547,6 +1629,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", ">");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, ">");
               RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_rel",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1565,6 +1651,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", ">=");
               nodo.agregarHijo(es1);
               nodo.agregarHijo(es2);
+              // ANÁLISIS SEMÁNTICO: Validar tipos comparables
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es1);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(es2);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, ">=");
               RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_rel",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1595,6 +1685,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "+");
                nodo.agregarHijo(es);
                nodo.agregarHijo(em);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(em);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "+");
                RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_suma",20, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1613,6 +1707,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "-");
                nodo.agregarHijo(es);
                nodo.agregarHijo(em);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(es);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(em);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "-");
                RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_suma",20, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1643,6 +1741,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "*");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "*");
                RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_mult",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1661,6 +1763,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "/");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "/");
                RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_mult",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1679,6 +1785,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "//");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "//");
                RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_mult",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1697,6 +1807,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "%");
                nodo.agregarHijo(em);
                nodo.agregarHijo(ep);
+               // ANÁLISIS SEMÁNTICO: Validar tipos numéricos (int)
+               String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(em);
+               String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+               AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "%");
                RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_mult",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1727,6 +1841,10 @@ class CUP$Parser$actions {
 		 arbol nodo = new arbol("OPERACION", "^");
               nodo.agregarHijo(eu);
               nodo.agregarHijo(ep);
+              // ANÁLISIS SEMÁNTICO: Validar tipos numéricos
+              String tipoIzq = AnalizadorSemantico.obtenerTipoExpresion(eu);
+              String tipoDer = AnalizadorSemantico.obtenerTipoExpresion(ep);
+              AnalizadorSemantico.validarCompatibilidadTipos(tipoIzq, tipoDer, "^");
               RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr_pot",22, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1907,7 +2025,12 @@ class CUP$Parser$actions {
 		int idleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int idright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object id = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new arbol("IDENT", id.toString()); 
+		 arbol nodo = new arbol("IDENT", id.toString());
+          // ANÁLISIS SEMÁNTICO: Validar que la variable esté declarada
+          if (!AnalizadorSemantico.estaVariableDeclara(id.toString())) {
+             util.ErrorHandler.agregarErrorSemantico("Variable no declarada: " + id.toString());
+          }
+          RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("prim",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1960,6 +2083,10 @@ class CUP$Parser$actions {
 		arbol a = (arbol)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		 arbol nodo = new arbol("LLAMADA", id.toString());
              if (a != null) nodo.agregarHijo(a);
+             // ANÁLISIS SEMÁNTICO: Validar que la función esté declarada
+             if (!AnalizadorSemantico.estaFuncionDeclarada(id.toString())) {
+                util.ErrorHandler.agregarErrorSemantico("Función no declarada: " + id.toString());
+             }
              RESULT = nodo; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("llamada",25, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

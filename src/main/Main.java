@@ -107,42 +107,60 @@ public class Main {
                         System.out.println("═══════════════════════════════════════════════════════════\n");
                         System.out.println(ast.toString());
                         
-                        // ========================================
-                        // FASE 3: ANÁLISIS SEMÁNTICO
-                        // ========================================
-                        System.out.println("\n═══════════════════════════════════════════════════════════");
-                        System.out.println("FASE 3: ANÁLISIS SEMÁNTICO");
-                        System.out.println("═══════════════════════════════════════════════════════════\n");
+                            // Verificar si hay errores léxicos o sintácticos
+                            if (ErrorHandler.getTotalErrores() > 0) {
+                                System.out.println("\n  SE ENCONTRARON ERRORES EN FASES ANTERIORES");
+                                System.out.println("No se procederá con análisis semántico ni generación de código.");
+                                ErrorHandler.generarReporte("output/reporte_errores.txt");
+                                ErrorHandler.mostrarResumen();
+                            } else {
+                                // ========================================
+                                // FASE 3: ANÁLISIS SEMÁNTICO
+                                // ========================================
+                                System.out.println("\n═══════════════════════════════════════════════════════════");
+                                System.out.println("FASE 3: ANÁLISIS SEMÁNTICO");
+                                System.out.println("═══════════════════════════════════════════════════════════\n");
+                            
+                                analizarSemantico(ast);
+                            
+                                // Verificar si hay errores semánticos
+                                if (ErrorHandler.getErroresSemanticos() > 0) {
+                                    System.out.println("\n  SE ENCONTRARON ERRORES SEMÁNTICOS");
+                                    System.out.println("No se procederá con generación de código MIPS.");
+                                    ErrorHandler.generarReporte("output/reporte_errores.txt");
+                                    ErrorHandler.mostrarResumen();
+                                } else {
+                                    // ========================================
+                                    // FASE 4: GENERACIÓN DE CÓDIGO MIPS
+                                    // ========================================
+                                    System.out.println("\n═══════════════════════════════════════════════════════════");
+                                    System.out.println("FASE 4: GENERACIÓN DE CÓDIGO MIPS");
+                                    System.out.println("═══════════════════════════════════════════════════════════\n");
+                                
+                                    generarCodigoMIPS(ast, outDir);
+                                }
+                            }
                         
-                        analizarSemantico(ast);
-                        
-                        // ========================================
-                        // FASE 4: GENERACIÓN DE CÓDIGO MIPS
-                        // ========================================
-                        System.out.println("\n═══════════════════════════════════════════════════════════");
-                        System.out.println("FASE 4: GENERACIÓN DE CÓDIGO MIPS");
-                        System.out.println("═══════════════════════════════════════════════════════════\n");
-                        
-                        generarCodigoMIPS(ast, outDir);
-                        
-                        // Guardar el árbol en el archivo de salida
-                        w.newLine();
-                        w.write("ÁRBOL SINTÁCTICO:");
-                        w.newLine();
-                        w.write(ast.toString());
-                        w.flush();
-                        
-                        // Guardar el árbol como JSON
-                        try (java.io.BufferedWriter wJson = new java.io.BufferedWriter(
-                                new java.io.FileWriter(new java.io.File(outDir, "arbol.json")))) {
-                            String jsonFormateado = formatearJSON(ast.toJSON());
-                            wJson.write(jsonFormateado);
-                            wJson.flush();
-                            System.out.println("\n JSON guardado en output/arbol.json");
-                            // Después de guardar el árbol como JSON
-                            generarHTMLArbol(ast, "output/arbol_interactivo.html");
-                            System.out.println(" Gráfico HTML generado en output/arbol_interactivo.html");
-                        }
+                                // Guardar el árbol en el archivo de salida solo si no hay errores sintácticos
+                                if (ErrorHandler.getTotalErrores() == 0) {
+                                    w.newLine();
+                                    w.write("ÁRBOL SINTÁCTICO:");
+                                    w.newLine();
+                                    w.write(ast.toString());
+                                    w.flush();
+                                
+                                    // Guardar el árbol como JSON
+                                    try (java.io.BufferedWriter wJson = new java.io.BufferedWriter(
+                                            new java.io.FileWriter(new java.io.File(outDir, "arbol.json")))) {
+                                        String jsonFormateado = formatearJSON(ast.toJSON());
+                                        wJson.write(jsonFormateado);
+                                        wJson.flush();
+                                        System.out.println("\n JSON guardado en output/arbol.json");
+                                        // Después de guardar el árbol como JSON
+                                        generarHTMLArbol(ast, "output/arbol_interactivo.html");
+                                        System.out.println(" Gráfico HTML generado en output/arbol_interactivo.html");
+                                    }
+                                }
                     }
                     
                     // ========================================
@@ -152,15 +170,11 @@ public class Main {
                     System.out.println("TABLA DE SÍMBOLOS GENERADA");
                     System.out.println("═══════════════════════════════════════════════════════════\n");
                     
-                    generarReportesTablaSimbolos(outDir, w);
-                    
-                    // Generar reporte de errores si hay
-                    if (ErrorHandler.getTotalErrores() > 0) {
-                        ErrorHandler.generarReporte("output/reporte_errores.txt");
-                        System.out.println("\n=== REPORTE DE ERRORES GENERADO ===");
-                        ErrorHandler.mostrarResumen();
-                    } else {
-                        System.out.println("\n La Compilación está sin errores");
+                        if (ErrorHandler.getTotalErrores() == 0) {
+                            generarReportesTablaSimbolos(outDir, w);
+                            System.out.println("\n La Compilación está sin errores");
+                        } else {
+                            ErrorHandler.generarReporte("output/reporte_errores.txt");
                     }
                 } catch (Exception e) {
                     // Escritura del resultado en el archivo de salida

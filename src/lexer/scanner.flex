@@ -154,7 +154,8 @@ ESPACIO = [ \t\f\r\n]+
 {ID}        { return new Symbol(sym.IDENT, yyline+1, yycolumn+1, yytext()); }
 
 /* EOF */
-<<EOF>>     { return new Symbol(sym.EOF); }
+<<EOF>> { return new Symbol(sym.EOF, yyline+1, yycolumn+1); }
+
 
 /* Error léxico. despliega el error con linea y columna y prosigue con el siguiente token */
 . {
