@@ -266,10 +266,33 @@ public class CodeGenerator {
                     break;
                 case "<":
                     emitir("    # Operación: menor que");
+
+                    generarCodigo(izq);              // resultado en $t0
+                    emitir("    move $t1, $t0");     // guardar operando izquierdo
+
+                    generarCodigo(der);              // resultado en $t0
+
+                    String labelTrue = generarLabelFor("L_lt_true_");
+                    String labelEnd  = generarLabelFor("L_lt_end_");
+
+                    emitir("    blt $t1, $t0, " + labelTrue);
+                    emitir("    li $t0, 0");         // false
+                    emitir("    j " + labelEnd);
+                    emitir(labelTrue + ":");
+                    emitir("    li $t0, 1");         // true
+                    emitir(labelEnd + ":");
+                    break;
+                
+                // Mayor que
+                // TEMPORALMENTE COMENTADO HASTA VERIFICAR SU FUNCIONAMIENTO
+                case ">":
+                    emitir("    # Operación: mayor que");
                     generarCodigo(izq);
                     generarCodigo(der);
-                    emitir("    blt $t0, $t1, " + generarLabel());
+                    emitir("    bgt $t0, $t1, " + generarLabel());
                     break;
+                    
+                
                 default:
                     emitir("    # Operación: " + operador);
                     break;
@@ -340,6 +363,19 @@ public class CodeGenerator {
     private String generarLabel() {
         return "L" + (labelContador++);
     }
+
+    /**
+     * Version 2 de generarLabel
+     * ********************
+     * @return
+     */
+
+    private String generarLabelFor(String prefix) {
+        return prefix + (labelContador++);
+    }
+
+
+
     
     /**
      * Obtiene el registro temporal siguiente
